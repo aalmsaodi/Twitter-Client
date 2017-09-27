@@ -9,7 +9,9 @@
 /* Begin PBXBuildFile section */
 		2B91FDD228DD8B63613C214D /* Pods_Twitter_Client.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DBDFFE3241B45CB74AD2799B /* Pods_Twitter_Client.framework */; };
 		CE3D51F91F7B1593009B64B1 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE3D51F81F7B1593009B64B1 /* User.swift */; };
-		CE3D51FD1F7B4819009B64B1 /* TweetCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE3D51FC1F7B4819009B64B1 /* TweetCell.swift */; };
+		CE3D51FD1F7B4819009B64B1 /* FullTweetCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE3D51FC1F7B4819009B64B1 /* FullTweetCell.swift */; };
+		CED2D11B1F7B648C00183972 /* TwitterCountersCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED2D11A1F7B648C00183972 /* TwitterCountersCell.swift */; };
+		CED2D11D1F7B64F900183972 /* TwitterButtonsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED2D11C1F7B64F900183972 /* TwitterButtonsCell.swift */; };
 		CEFC5F291F7AA9430046D5D4 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEFC5F281F7AA9430046D5D4 /* AppDelegate.swift */; };
 		CEFC5F2B1F7AA9430046D5D4 /* LoginVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEFC5F2A1F7AA9430046D5D4 /* LoginVC.swift */; };
 		CEFC5F2E1F7AA9430046D5D4 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CEFC5F2C1F7AA9430046D5D4 /* Main.storyboard */; };
@@ -21,7 +23,9 @@
 /* Begin PBXFileReference section */
 		7244B5D31D7AA0E9934D7BCC /* Pods-Twitter Client.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Twitter Client.release.xcconfig"; path = "Pods/Target Support Files/Pods-Twitter Client/Pods-Twitter Client.release.xcconfig"; sourceTree = "<group>"; };
 		CE3D51F81F7B1593009B64B1 /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
-		CE3D51FC1F7B4819009B64B1 /* TweetCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TweetCell.swift; sourceTree = "<group>"; };
+		CE3D51FC1F7B4819009B64B1 /* FullTweetCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FullTweetCell.swift; sourceTree = "<group>"; };
+		CED2D11A1F7B648C00183972 /* TwitterCountersCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TwitterCountersCell.swift; sourceTree = "<group>"; };
+		CED2D11C1F7B64F900183972 /* TwitterButtonsCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TwitterButtonsCell.swift; sourceTree = "<group>"; };
 		CEFC5F251F7AA9430046D5D4 /* Twitter Client.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Twitter Client.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		CEFC5F281F7AA9430046D5D4 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		CEFC5F2A1F7AA9430046D5D4 /* LoginVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginVC.swift; sourceTree = "<group>"; };
@@ -74,7 +78,9 @@
 		CE3D51FA1F7B47CF009B64B1 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				CE3D51FC1F7B4819009B64B1 /* TweetCell.swift */,
+				CE3D51FC1F7B4819009B64B1 /* FullTweetCell.swift */,
+				CED2D11A1F7B648C00183972 /* TwitterCountersCell.swift */,
+				CED2D11C1F7B64F900183972 /* TwitterButtonsCell.swift */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -263,8 +269,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				CE3D51F91F7B1593009B64B1 /* User.swift in Sources */,
+				CED2D11D1F7B64F900183972 /* TwitterButtonsCell.swift in Sources */,
 				CEFC5F2B1F7AA9430046D5D4 /* LoginVC.swift in Sources */,
-				CE3D51FD1F7B4819009B64B1 /* TweetCell.swift in Sources */,
+				CE3D51FD1F7B4819009B64B1 /* FullTweetCell.swift in Sources */,
+				CED2D11B1F7B648C00183972 /* TwitterCountersCell.swift in Sources */,
 				CEFC5F401F7AAC580046D5D4 /* TwitterClient.swift in Sources */,
 				CEFC5F291F7AA9430046D5D4 /* AppDelegate.swift in Sources */,
 			);

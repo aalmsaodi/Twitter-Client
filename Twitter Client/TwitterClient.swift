@@ -6,7 +6,7 @@
 //  Copyright © 2017 YSH. All rights reserved.
 //
 
-import UIKit
+import Foundation
 import Alamofire
 import OAuthSwift
 import OAuthSwiftAlamofire

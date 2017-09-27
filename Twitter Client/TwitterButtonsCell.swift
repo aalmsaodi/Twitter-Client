@@ -1,5 +1,5 @@
 //
-//  TweetCell.swift
+//  TwitterButtonsCell.swift
 //  Twitter Client
 //
 //  Created by user on 9/26/17.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-class TweetCell: UITableViewCell {
+class TwitterButtonsCell: UITableViewCell {
 
     override func awakeFromNib() {
         super.awakeFromNib()
