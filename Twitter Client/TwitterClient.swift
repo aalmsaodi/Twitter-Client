@@ -30,6 +30,95 @@ class TwitterClient: SessionManager {
     
     static let callbackURLString = "TwitterClient://"
     
+    func postNewTweet(tweet:String, completion: @escaping (Error?)->() ) {
+        let params: Parameters = ["status": tweet]
+        request(URL(string: "https://api.twitter.com/1.1/statuses/update.json")!, method: .post, parameters: params)
+            .validate()
+            .responseJSON { response in
+                switch response.result {
+                case .failure(let error):
+                    completion(error)
+                    return
+                case .success:
+                    completion(nil)
+                    return
+                }
+        }
+    }
+    
+    func login(success: @escaping () -> (), failure: @escaping (Error?) -> ()) {
+        
+        let callbackURL = URL(string: TwitterClient.callbackURLString)!
+        oauthManager.authorize(withCallbackURL: callbackURL, success: { (credential, _response, parameters) in
+            
+            self.save(credential: credential)
+            
+            self.getCurrentAccount(completion: { (user, error) in
+                if let error = error {
+                    failure(error)
+                } else if let user = user {
+                    loggedInUser = user
+                    print("Welcome \(user.name)")
+                    
+                    // MARK: TODO: set User.current, so that it's persisted
+                    
+                    success()
+                }
+            })
+        }) { (error) in
+            failure(error)
+        }
+    }
+    
+    func logout() {
+        clearCredentials()
+        loggedInUser = nil
+        NotificationCenter.default.post(name: NSNotification.Name("didLogout"), object: nil)
+    }
+    
+    func getCurrentAccount(completion: @escaping (User?, Error?) -> ()) {
+        request(URL(string: "https://api.twitter.com/1.1/account/verify_credentials.json")!)
+            .validate()
+            .responseJSON { response in
+                switch response.result {
+                case .failure(let error):
+                    completion(nil, error)
+                    
+                case .success:
+                    guard let userDictionary = response.result.value as? [String: Any] else {
+                        completion(nil, "Unable to create user dictionary" as? Error)
+                        return
+                    }
+                    completion(User(user: JSON(userDictionary)), nil)
+                }
+        }
+    }
+    
+    func getHomeTimeLine(completion: @escaping ([Tweet]?, Error?) -> ()) {
+        request(URL(string: "https://api.twitter.com/1.1/statuses/home_timeline.json")!, method: .get)
+            .validate()
+            .responseJSON { (response) in
+                switch response.result {
+                case .failure(let error):
+                    completion(nil, error)
+                    return
+                case .success:
+                    guard let tweetDictionaries = response.result.value as? [[String: Any]] else {
+                        print("Failed to parse tweets")
+                        let error = NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey : "Failed to parse tweets"])
+                        completion(nil, error)
+                        return
+                    }
+                    
+                    let tweets = tweetDictionaries.flatMap({ (dictionary) -> Tweet in
+                        Tweet(timeLine: JSON(dictionary))
+                    })
+                    completion(tweets, nil)
+                }
+        }
+    }
+
+    
     // Private init for singleton only
     private init() {
         super.init()
@@ -91,94 +180,4 @@ class TwitterClient: SessionManager {
         }
     }
     
-    func login(success: @escaping () -> (), failure: @escaping (Error?) -> ()) {
-     
-        let callbackURL = URL(string: TwitterClient.callbackURLString)!
-        oauthManager.authorize(withCallbackURL: callbackURL, success: { (credential, _response, parameters) in
-            
-            self.save(credential: credential)
-            
-            self.getCurrentAccount(completion: { (user, error) in
-                if let error = error {
-                    failure(error)
-                } else if let user = user {
-                    loggedInUser = user
-                    print("Welcome \(user.name)")
-                    
-                    // MARK: TODO: set User.current, so that it's persisted
-                    
-                    success()
-                }
-            })
-        }) { (error) in
-            failure(error)
-        }
-    }
-    
-    func logout() {
-        clearCredentials()
-        
-        // TODO: Clear current user by setting it to nil
-//        NotificationCenter.default.post(name: NSNotification.Name("didLogout"), object: nil)
-    }
-
-    func getCurrentAccount(completion: @escaping (User?, Error?) -> ()) {
-        request(URL(string: "https://api.twitter.com/1.1/account/verify_credentials.json")!)
-            .validate()
-            .responseJSON { response in
-                switch response.result {
-                    case .failure(let error):
-                        completion(nil, error)
-
-                    case .success:
-                        guard let userDictionary = response.result.value as? [String: Any] else {
-                            completion(nil, "Unable to create user dictionary" as? Error)
-                            return
-                        }
-                        completion(User(user: JSON(userDictionary)), nil)
-                }
-        }
-    }
- 
-    func getHomeTimeLine(completion: @escaping ([Tweet]?, Error?) -> ()) {
-        request(URL(string: "https://api.twitter.com/1.1/statuses/home_timeline.json")!, method: .get)
-            .validate()
-            .responseJSON { (response) in
-                switch response.result {
-                case .failure(let error):
-                    completion(nil, error)
-                    return
-                case .success:
-                    guard let tweetDictionaries = response.result.value as? [[String: Any]] else {
-                        print("Failed to parse tweets")
-                        let error = NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey : "Failed to parse tweets"])
-                        completion(nil, error)
-                        return
-                    }
-                    
-                    let tweets = tweetDictionaries.flatMap({ (dictionary) -> Tweet in
-                        Tweet(timeLine: JSON(dictionary))
-                    })
-                    completion(tweets, nil)
-                }
-        }
-    }
-    
-
-    func postNewTweet(tweet:String, completion: @escaping (Error?)->() ) {
-        
-        request(URL(string: "https://api.twitter.com/1.1/statuses/update.json")!, method: .post, parameters: ["status": tweet])
-            .validate()
-            .responseJSON { response in
-                switch response.result {
-                case .failure(let error):
-                    completion(error)
-                    return
-                case .success:
-                    completion(nil)
-                    return
-                }
-        }
-    }
-
 }

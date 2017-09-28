@@ -32,6 +32,7 @@ class PostTweetVC: UIViewController {
     }
 
     @IBAction func cancelTapped(_ sender: Any) {
+        navigationController?.popViewController(animated: true)
     }
 
     @IBAction func tweetTapped(_ sender: Any) {

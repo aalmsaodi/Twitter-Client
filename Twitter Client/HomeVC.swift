@@ -37,6 +37,10 @@ class HomeVC: UIViewController {
         tableView.insertSubview(refreshControl, at: 0)
     }
     
+    @IBAction func signOutTapped(_ sender: Any) {
+        TwitterClient.shared.logout()
+        navigationController?.popViewController(animated: true)
+    }
     func refreshControlAction(_ refreshControl: UIRefreshControl) {
         
         TwitterClient.shared.getHomeTimeLine { (tweets, error) in
