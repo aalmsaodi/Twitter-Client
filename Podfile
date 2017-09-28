@@ -11,5 +11,6 @@ target 'Twitter Client' do
   pod 'OAuthSwift'
   pod 'OAuthSwiftAlamofire'
   pod 'KeychainAccess'
+  pod 'AFNetworking'
 
 end

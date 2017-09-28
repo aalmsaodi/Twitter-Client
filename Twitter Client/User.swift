@@ -7,13 +7,18 @@
 //
 
 import Foundation
+import SwiftyJSON
 
 class User {
     
-    var name: String
+    var name:String
+    var screenName:String
+    var avatarImageUrl:String
     
-    init(dictionary: [String: Any]) {
-        name = dictionary["name"] as! String
-        
+    
+    init(user: JSON) {
+        name = user["name"].string!
+        avatarImageUrl = user["profile_image_url_https"].string!
+        screenName = "@\(user["screen_name"].string!)"
     }
 }

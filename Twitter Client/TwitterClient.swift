@@ -11,7 +11,9 @@ import Alamofire
 import OAuthSwift
 import OAuthSwiftAlamofire
 import KeychainAccess
+import SwiftyJSON
 
+var loggedInUser:User!
 
 class TwitterClient: SessionManager {
     
@@ -100,6 +102,7 @@ class TwitterClient: SessionManager {
                 if let error = error {
                     failure(error)
                 } else if let user = user {
+                    loggedInUser = user
                     print("Welcome \(user.name)")
                     
                     // MARK: TODO: set User.current, so that it's persisted
@@ -132,9 +135,50 @@ class TwitterClient: SessionManager {
                             completion(nil, "Unable to create user dictionary" as? Error)
                             return
                         }
-                        completion(User(dictionary: userDictionary), nil)
+                        completion(User(user: JSON(userDictionary)), nil)
+                }
+        }
+    }
+ 
+    func getHomeTimeLine(completion: @escaping ([Tweet]?, Error?) -> ()) {
+        request(URL(string: "https://api.twitter.com/1.1/statuses/home_timeline.json")!, method: .get)
+            .validate()
+            .responseJSON { (response) in
+                switch response.result {
+                case .failure(let error):
+                    completion(nil, error)
+                    return
+                case .success:
+                    guard let tweetDictionaries = response.result.value as? [[String: Any]] else {
+                        print("Failed to parse tweets")
+                        let error = NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey : "Failed to parse tweets"])
+                        completion(nil, error)
+                        return
+                    }
+                    
+                    let tweets = tweetDictionaries.flatMap({ (dictionary) -> Tweet in
+                        Tweet(timeLine: JSON(dictionary))
+                    })
+                    completion(tweets, nil)
                 }
         }
     }
     
+
+    func postNewTweet(tweet:String, completion: @escaping (Error?)->() ) {
+        
+        request(URL(string: "https://api.twitter.com/1.1/statuses/update.json")!, method: .post, parameters: ["status": tweet])
+            .validate()
+            .responseJSON { response in
+                switch response.result {
+                case .failure(let error):
+                    completion(error)
+                    return
+                case .success:
+                    completion(nil)
+                    return
+                }
+        }
+    }
+
 }

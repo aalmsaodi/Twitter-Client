@@ -9,15 +9,11 @@
 import UIKit
 
 class LoginVC: UIViewController {
-
-
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
     }
-
-
 
     @IBAction func loginTapped(_ sender: Any) {
         TwitterClient.shared.login(success: {
