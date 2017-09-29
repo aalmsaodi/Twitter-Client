@@ -7,6 +7,8 @@
 //
 
 import UIKit
+import BDBOAuth1Manager
+import AFNetworking
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -15,7 +17,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+        
+        NotificationCenter.default.addObserver(forName: Notification.Name("didLogin"), object: nil, queue: OperationQueue.main) { (Notification) in
+            print("welecome \(TwitterClient.loggedInUser)")
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            let navigationgController = storyboard.instantiateViewController(withIdentifier: "navigationController") as! UINavigationController
+            self.window?.rootViewController = navigationgController
+        }
+        
         NotificationCenter.default.addObserver(forName: Notification.Name("didLogout"), object: nil, queue: OperationQueue.main) { (Notification) in
             print("Logout notification received")
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
@@ -28,7 +37,28 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // OAuth step 2
     func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool {
         // Handle urlcallback sent from Twitter
-        TwitterClient.shared.handle(url: url)
+        
+        let requestToken = BDBOAuth1Credential(queryString: url.query)
+
+        TwitterClient.shared?.fetchAccessToken(withPath: "oauth/access_token", method: "POST", requestToken: requestToken, success: { (accessToken: BDBOAuth1Credential?) in
+            print("got access token")
+            TwitterClient.shared?.requestSerializer.saveAccessToken(accessToken)
+            
+            TwitterClient.shared?.getCurrentAccount(completion: { (user: User?, error: Error?) in
+                if let user = user {
+                    TwitterClient.loggedInUser = user
+                    NotificationCenter.default.post(name: NSNotification.Name("didLogin"), object: nil)
+
+                } else {
+                    print(error ?? "No user got logged in")
+                }
+            })
+            
+        }, failure: { (error: Error?) in
+            print ("fail to recieve access token")
+        })
+        
+        
         return true
     }
     

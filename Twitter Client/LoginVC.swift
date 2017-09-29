@@ -7,6 +7,8 @@
 //
 
 import UIKit
+import AFNetworking
+import BDBOAuth1Manager
 
 class LoginVC: UIViewController {
     
@@ -16,13 +18,8 @@ class LoginVC: UIViewController {
     }
 
     @IBAction func loginTapped(_ sender: Any) {
-        TwitterClient.shared.login(success: {
-            self.performSegue(withIdentifier: "fromLogin", sender: nil)
-        }) { (error) in
-            if let error = error {
-                print(error.localizedDescription)
-            }
-        }
+        
+        TwitterClient.shared?.login()
     }
 }
 

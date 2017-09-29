@@ -1,43 +1,40 @@
 PODS:
-  - AFNetworking (3.1.0):
-    - AFNetworking/NSURLSession (= 3.1.0)
-    - AFNetworking/Reachability (= 3.1.0)
-    - AFNetworking/Security (= 3.1.0)
-    - AFNetworking/Serialization (= 3.1.0)
-    - AFNetworking/UIKit (= 3.1.0)
-  - AFNetworking/NSURLSession (3.1.0):
+  - AFNetworking (2.6.3):
+    - AFNetworking/NSURLConnection (= 2.6.3)
+    - AFNetworking/NSURLSession (= 2.6.3)
+    - AFNetworking/Reachability (= 2.6.3)
+    - AFNetworking/Security (= 2.6.3)
+    - AFNetworking/Serialization (= 2.6.3)
+    - AFNetworking/UIKit (= 2.6.3)
+  - AFNetworking/NSURLConnection (2.6.3):
     - AFNetworking/Reachability
     - AFNetworking/Security
     - AFNetworking/Serialization
-  - AFNetworking/Reachability (3.1.0)
-  - AFNetworking/Security (3.1.0)
-  - AFNetworking/Serialization (3.1.0)
-  - AFNetworking/UIKit (3.1.0):
+  - AFNetworking/NSURLSession (2.6.3):
+    - AFNetworking/Reachability
+    - AFNetworking/Security
+    - AFNetworking/Serialization
+  - AFNetworking/Reachability (2.6.3)
+  - AFNetworking/Security (2.6.3)
+  - AFNetworking/Serialization (2.6.3)
+  - AFNetworking/UIKit (2.6.3):
+    - AFNetworking/NSURLConnection
     - AFNetworking/NSURLSession
-  - Alamofire (4.0.1)
-  - KeychainAccess (3.0.2)
-  - OAuthSwift (1.1.2)
-  - OAuthSwiftAlamofire (0.1.0):
-    - Alamofire
-    - OAuthSwift
+  - BDBOAuth1Manager (1.6.0):
+    - AFNetworking/NSURLConnection (~> 2.6.0)
+    - AFNetworking/NSURLSession (~> 2.6.0)
   - SwiftyJSON (3.1.4)
 
 DEPENDENCIES:
   - AFNetworking
-  - Alamofire (~> 4.0.0)
-  - KeychainAccess
-  - OAuthSwift
-  - OAuthSwiftAlamofire
+  - BDBOAuth1Manager (= 1.6.0)
   - SwiftyJSON
 
 SPEC CHECKSUMS:
-  AFNetworking: 5e0e199f73d8626b11e79750991f5d173d1f8b67
-  Alamofire: 7682d43245de14874acd142ec137b144aa1dd335
-  KeychainAccess: a986406022dfc7c634c691ad3bec670cc6a32002
-  OAuthSwift: 5aa5659984d3ca3206ba636a9e7a9c6626b2e8bd
-  OAuthSwiftAlamofire: 20bb998ac506f82c3bab0625fbc98a9c6fca783f
+  AFNetworking: cb8d14a848e831097108418f5d49217339d4eb60
+  BDBOAuth1Manager: cd5a5872f355ca38180d52ca2dd844f0b0c84797
   SwiftyJSON: c2842d878f95482ffceec5709abc3d05680c0220
 
-PODFILE CHECKSUM: 66a216f43a3f400df0e3c6e7620f8049bb5fc2d6
+PODFILE CHECKSUM: 5eda763c728e1a7b19f859b3e4bda9a09d2f10bd
 
 COCOAPODS: 1.2.1

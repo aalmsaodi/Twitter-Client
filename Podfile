@@ -6,11 +6,8 @@ target 'Twitter Client' do
   use_frameworks!
 
   # Pods for Twitter Client
-  pod 'Alamofire','~> 4.0.0'
-  pod 'SwiftyJSON'
-  pod 'OAuthSwift'
-  pod 'OAuthSwiftAlamofire'
-  pod 'KeychainAccess'
   pod 'AFNetworking'
+  pod 'BDBOAuth1Manager', '1.6.0'
+  pod 'SwiftyJSON'
 
 end

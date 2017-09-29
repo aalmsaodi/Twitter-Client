@@ -60,7 +60,7 @@
         <!--Home-->
         <scene sceneID="mi7-dx-CPq">
             <objects>
-                <viewController id="daW-VR-4Ue" customClass="HomeVC" customModule="Twitter_Client" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="homeVC" id="daW-VR-4Ue" customClass="HomeVC" customModule="Twitter_Client" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="vUW-x0-GlZ"/>
                         <viewControllerLayoutGuide type="bottom" id="gzC-Wl-UrY"/>
@@ -531,7 +531,7 @@
         <!--Navigation Controller-->
         <scene sceneID="Ens-bS-3G5">
             <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="VKh-BY-Hf0" sceneMemberID="viewController">
+                <navigationController storyboardIdentifier="navigationController" automaticallyAdjustsScrollViewInsets="NO" id="VKh-BY-Hf0" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="8JP-Vg-cNE">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
