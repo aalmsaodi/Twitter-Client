@@ -15,22 +15,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
 
-
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         
-        NotificationCenter.default.addObserver(forName: Notification.Name("didLogin"), object: nil, queue: OperationQueue.main) { (Notification) in
-            print("welecome \(TwitterClient.loggedInUser)")
+        if let user = UserDefaults.standard.data(forKey: "loggedUser") {
+            let user = NSKeyedUnarchiver.unarchiveObject(with: user) as! User
+            TwitterClient.loggedInUser = user
+            print("welecome \(user.name)")
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
             let navigationgController = storyboard.instantiateViewController(withIdentifier: "navigationController") as! UINavigationController
-            self.window?.rootViewController = navigationgController
+            window?.rootViewController = navigationgController
         }
         
-        NotificationCenter.default.addObserver(forName: Notification.Name("didLogout"), object: nil, queue: OperationQueue.main) { (Notification) in
-            print("Logout notification received")
-            let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            let loginVC = storyboard.instantiateViewController(withIdentifier: "loginVC")
-            self.window?.rootViewController = loginVC
-        }
         return true
     }
 
@@ -47,8 +42,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             TwitterClient.shared?.getCurrentAccount(completion: { (user: User?, error: Error?) in
                 if let user = user {
                     TwitterClient.loggedInUser = user
-                    NotificationCenter.default.post(name: NSNotification.Name("didLogin"), object: nil)
-
+                    let encodedData:Data = NSKeyedArchiver.archivedData(withRootObject:user)
+                    UserDefaults.standard.set(encodedData, forKey: "loggedUser")
+                    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                    let navigationgController = storyboard.instantiateViewController(withIdentifier: "navigationController") as! UINavigationController
+                    self.window?.rootViewController = navigationgController
                 } else {
                     print(error ?? "No user got logged in")
                 }

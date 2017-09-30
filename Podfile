@@ -9,5 +9,6 @@ target 'Twitter Client' do
   pod 'AFNetworking'
   pod 'BDBOAuth1Manager', '1.6.0'
   pod 'SwiftyJSON'
-
+  pod 'MRProgress'
+  pod 'MRProgress/AFNetworking'
 end

@@ -7,54 +7,89 @@
 //
 
 import UIKit
+import MRProgress
 
-class PostTweetVC: UIViewController, UITextFieldDelegate {
-
+class PostTweetVC: UIViewController, UITextViewDelegate {
+    
     @IBOutlet weak var avatarImage: UIImageView!
     @IBOutlet weak var userNameLabel: UILabel!
     @IBOutlet weak var screenNameLabel: UILabel!
-    @IBOutlet weak var tweetTextField: UITextField!
+    @IBOutlet weak var tweetTextField: UITextView!
     
     var retweeting:Bool!
+    var replyToTweetID:String!
+    var ownerOfTweet:String!
     var counterLabel:UILabel!
+    let TWEETLENGTHLIMIT:Int = 140
     
     override func viewDidLoad() {
         super.viewDidLoad()
-    
+        
+        tweetTextField.delegate = self
+        tweetTextField.becomeFirstResponder()
         if let url = URL(string: TwitterClient.loggedInUser.avatarImageUrl) {
             avatarImage.setImageWith(url)
         }
-        
         userNameLabel.text = TwitterClient.loggedInUser.name
         screenNameLabel.text = TwitterClient.loggedInUser.screenName
-        
         navigationController?.navigationBar.backgroundColor = UIColor.lightGray
-//        navigationItem.
+        
+        if let navigationBar = self.navigationController?.navigationBar {
+            let frame = CGRect(x: 3*navigationBar.frame.width/5, y: 0, width: 50, height: navigationBar.frame.height)
+            counterLabel = UILabel(frame: frame)
+            counterLabel.textColor = UIColor.white
+            navigationBar.addSubview(counterLabel)
+            counterLabel.text = String(TWEETLENGTHLIMIT)
+        }
     }
-
+    
     @IBAction func cancelTapped(_ sender: Any) {
+        counterLabel.text = ""
         navigationController?.popViewController(animated: true)
     }
-
+    
     @IBAction func tweetTapped(_ sender: Any) {
         guard  let tweet = tweetTextField.text else {return}
-        TwitterClient.shared?.postNewTweet(tweet: tweet) { (error) in
-            if error == nil {
-                self.navigationController?.popViewController(animated: true)
-            } else {
-                print(error ?? "tweet didn't get through")
+        self.tweetTextField.resignFirstResponder()
+        let tap = UITapGestureRecognizer(target: self, action: #selector(dismissCheckView))
+        tap.delegate = self as? UIGestureRecognizerDelegate
+        
+        if retweeting { //Replying to a Tweet
+            TwitterClient.shared?.postTweet(tweet: tweet, replyToTweetID: replyToTweetID, ownerOfTweet: ownerOfTweet) { [unowned self] (error) in
+                if error == nil {
+                    MRProgressOverlayView.showOverlayAdded(to: self.view, title: "Reply Sent", mode: .checkmark, animated: true)
+                    
+                } else {
+                    MRProgressOverlayView.showOverlayAdded(to: self.view, title: "Replying Faild", mode: .cross, animated: true)
+                    print(error ?? "tweet didn't get through")
+                }
+                self.view.addGestureRecognizer(tap)
+            }
+            
+        } else { //Posting new Tweet
+            TwitterClient.shared?.postTweet(tweet: tweet, replyToTweetID: nil, ownerOfTweet: nil) { [unowned self] (error) in
+                if error == nil {
+                    MRProgressOverlayView.showOverlayAdded(to: self.view, title: "Tweet Sent", mode: .checkmark, animated: true)
+                    
+                } else {
+                    MRProgressOverlayView.showOverlayAdded(to: self.view, title: "Tweeting Faild", mode: .cross, animated: true)
+                    print(error ?? "tweet didn't get through")
+                }
+                self.view.addGestureRecognizer(tap)
             }
         }
     }
     
-//    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-//        let newLength = ((textField.text?.utf16)?.count)! + (string.utf16).count - range.length
-//        if(newLength <= 140){
-//            self.label.text = "\(140 - newLength)"
-//            return true
-//        }else{
-//            return false
-//        }
-//    }
-   
+    func dismissCheckView() {
+        MRProgressOverlayView.dismissOverlay(for: self.view, animated: true)
+        counterLabel.text = ""
+        navigationController?.popViewController(animated: true)
+    }
+    
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        let newLength = textView.text!.characters.count + (text.characters.count - range.length)
+        counterLabel.text = String(TWEETLENGTHLIMIT - newLength)
+        
+        return newLength < TWEETLENGTHLIMIT
+    }
 }

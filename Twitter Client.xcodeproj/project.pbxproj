@@ -16,6 +16,7 @@
 		CE7C7CBD1F7D44F500F4C479 /* String+Subscript.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7C7CBC1F7D44F500F4C479 /* String+Subscript.swift */; };
 		CE7C7CBF1F7D5A7100F4C479 /* TweetVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7C7CBE1F7D5A7100F4C479 /* TweetVC.swift */; };
 		CE7C7CC11F7D74AB00F4C479 /* PostTweetVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7C7CC01F7D74AB00F4C479 /* PostTweetVC.swift */; };
+		CEAFC8071F7EE92D00EC621B /* HomeVC+TableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEAFC8061F7EE92D00EC621B /* HomeVC+TableView.swift */; };
 		CED2D1211F7BFCB400183972 /* HomeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED2D1201F7BFCB400183972 /* HomeVC.swift */; };
 		CED2D1231F7C047E00183972 /* Tweet.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED2D1221F7C047E00183972 /* Tweet.swift */; };
 		CEFC5F291F7AA9430046D5D4 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEFC5F281F7AA9430046D5D4 /* AppDelegate.swift */; };
@@ -36,6 +37,7 @@
 		CE7C7CBC1F7D44F500F4C479 /* String+Subscript.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+Subscript.swift"; sourceTree = "<group>"; };
 		CE7C7CBE1F7D5A7100F4C479 /* TweetVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TweetVC.swift; sourceTree = "<group>"; };
 		CE7C7CC01F7D74AB00F4C479 /* PostTweetVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PostTweetVC.swift; sourceTree = "<group>"; };
+		CEAFC8061F7EE92D00EC621B /* HomeVC+TableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "HomeVC+TableView.swift"; sourceTree = "<group>"; };
 		CED2D1201F7BFCB400183972 /* HomeVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HomeVC.swift; sourceTree = "<group>"; };
 		CED2D1221F7C047E00183972 /* Tweet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tweet.swift; sourceTree = "<group>"; };
 		CEFC5F251F7AA9430046D5D4 /* Twitter Client.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Twitter Client.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -102,6 +104,7 @@
 			children = (
 				CEFC5F2A1F7AA9430046D5D4 /* LoginVC.swift */,
 				CED2D1201F7BFCB400183972 /* HomeVC.swift */,
+				CEAFC8061F7EE92D00EC621B /* HomeVC+TableView.swift */,
 				CE1B4CCA1F7DC26B00E18189 /* HomeVC+Scroll.swift */,
 				CE7C7CBE1F7D5A7100F4C479 /* TweetVC.swift */,
 				CE7C7CC01F7D74AB00F4C479 /* PostTweetVC.swift */,
@@ -291,6 +294,7 @@
 				CE1B4CCB1F7DC26C00E18189 /* HomeVC+Scroll.swift in Sources */,
 				CED2D1211F7BFCB400183972 /* HomeVC.swift in Sources */,
 				CED2D1231F7C047E00183972 /* Tweet.swift in Sources */,
+				CEAFC8071F7EE92D00EC621B /* HomeVC+TableView.swift in Sources */,
 				CEFC5F2B1F7AA9430046D5D4 /* LoginVC.swift in Sources */,
 				CE7C7CBF1F7D5A7100F4C479 /* TweetVC.swift in Sources */,
 				CE3D51FD1F7B4819009B64B1 /* FullTweetCell.swift in Sources */,

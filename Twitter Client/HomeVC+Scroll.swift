@@ -18,9 +18,7 @@ extension HomeVC: UIScrollViewDelegate {
             if(scrollView.contentOffset.y > scrollOffsetThreshold && tableView.isDragging) {
                 isMoreDataLoading = true
                 
-//                let frame = CGRect(x: 0, y: tableView.contentSize.height, width: tableView.bounds.size.width, height: InfiniteScrollActivityView.defaultHeight)
-//                loadingMoreView?.frame = frame
-                loadingMoreView!.startAnimating()
+                loadingMoreView.startAnimating()
                 
                 getMoreResults()
             }
@@ -28,7 +26,15 @@ extension HomeVC: UIScrollViewDelegate {
     }
     
     fileprivate func getMoreResults() {
-        
-        
+        TwitterClient.shared?.getHomeTimeLine(offset: tweets.last?.id, completion: { (tweets, error) in
+            if let tweets = tweets {
+                self.tweets.append(contentsOf: tweets.dropFirst()) //drop first repeated tweet
+                self.tableView.reloadData()
+                self.loadingMoreView.isHidden = true
+                self.isMoreDataLoading = false
+            } else if let error = error {
+                print("Error getting more home timeline: " + error.localizedDescription)
+            }
+        })
     }
 }
