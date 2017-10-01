@@ -17,10 +17,10 @@ class PostTweetVC: UIViewController, UITextViewDelegate {
     @IBOutlet weak var tweetTextField: UITextView!
     
     var retweeting:Bool!
-    var replyToTweetID:String!
-    var ownerOfTweet:String!
     var counterLabel:UILabel!
+    var tweetReplyingTo:Tweet?
     let TWEETLENGTHLIMIT:Int = 140
+    var returningNewTweet: ((Tweet?)->())?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -55,10 +55,10 @@ class PostTweetVC: UIViewController, UITextViewDelegate {
         tap.delegate = self as? UIGestureRecognizerDelegate
         
         if retweeting { //Replying to a Tweet
-            TwitterClient.shared?.postTweet(tweet: tweet, replyToTweetID: replyToTweetID, ownerOfTweet: ownerOfTweet) { [unowned self] (error) in
+            TwitterClient.shared?.postTweet(tweet: tweet, replyToTweetID: tweetReplyingTo?.id, ownerOfTweet: tweetReplyingTo?.user.screenName) { [unowned self] (error, newTweetID) in
                 if error == nil {
                     MRProgressOverlayView.showOverlayAdded(to: self.view, title: "Reply Sent", mode: .checkmark, animated: true)
-                    
+                    self.createTempTweetToShowOnTimeLineWithoutFetching(itIsNewTweet: false, newTweetID: newTweetID!)
                 } else {
                     MRProgressOverlayView.showOverlayAdded(to: self.view, title: "Replying Faild", mode: .cross, animated: true)
                     print(error ?? "tweet didn't get through")
@@ -67,10 +67,10 @@ class PostTweetVC: UIViewController, UITextViewDelegate {
             }
             
         } else { //Posting new Tweet
-            TwitterClient.shared?.postTweet(tweet: tweet, replyToTweetID: nil, ownerOfTweet: nil) { [unowned self] (error) in
+            TwitterClient.shared?.postTweet(tweet: tweet, replyToTweetID: nil, ownerOfTweet: nil) { [unowned self] (error, newTweetID) in
                 if error == nil {
                     MRProgressOverlayView.showOverlayAdded(to: self.view, title: "Tweet Sent", mode: .checkmark, animated: true)
-                    
+                    self.createTempTweetToShowOnTimeLineWithoutFetching(itIsNewTweet: true, newTweetID: newTweetID!)
                 } else {
                     MRProgressOverlayView.showOverlayAdded(to: self.view, title: "Tweeting Faild", mode: .cross, animated: true)
                     print(error ?? "tweet didn't get through")
@@ -84,6 +84,28 @@ class PostTweetVC: UIViewController, UITextViewDelegate {
         MRProgressOverlayView.dismissOverlay(for: self.view, animated: true)
         counterLabel.text = ""
         navigationController?.popViewController(animated: true)
+    }
+    
+    func createTempTweetToShowOnTimeLineWithoutFetching(itIsNewTweet:Bool, newTweetID:String){
+        var tweetText:String!
+        var retweetedBy:String?
+        if itIsNewTweet {
+            tweetText = tweetTextField.text!
+        } else {
+            let replayingToScreen = (tweetReplyingTo?.user.screenName)!
+            tweetText = "\(replayingToScreen) \(tweetTextField.text!)"
+            retweetedBy = tweetReplyingTo?.retweetedBy?["name"]
+        }
+        let formatter = DateFormatter()
+        formatter.dateFormat = "E M d HH:mm:ss Z y"
+        formatter.dateStyle = .short
+        formatter.timeStyle = .short
+        let creationDate = formatter.string(from: Date())
+        let tweetAge = "0s"
+        
+        let newTweet = Tweet(id: newTweetID, user: (TwitterClient.loggedInUser)!, tweetText: tweetText, creationDate: creationDate, tweetAge: tweetAge, retweetedBy: retweetedBy)
+        
+        returningNewTweet?(newTweet)
     }
     
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {

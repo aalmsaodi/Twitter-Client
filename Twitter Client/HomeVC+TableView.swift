@@ -28,16 +28,32 @@ extension HomeVC: UITableViewDelegate, UITableViewDataSource {
             let tweetVC = segue.destination as! TweetVC
             let index = tableView.indexPath(for: sender as! FullTweetCell)
             tweetVC.tweet = tweets[(index?.row)!]
+            tweetVC.returningNewTweet = {[unowned self] tweet in
+                if let newTweet = tweet {
+                    self.tweets.insert(newTweet, at: 0)
+                    self.tableView.reloadData()
+                }
+            }
         } else {
             let postTweetVC = segue.destination as! PostTweetVC
-            
+            postTweetVC.returningNewTweet = {[unowned self] tweet in
+                if let newTweet = tweet {
+                    self.tweets.insert(newTweet, at: 0)
+                    self.tableView.reloadData()
+                }
+            }
             if segue.identifier == "fromReplyBtnOnCelltoPostTweetVC" {
                 postTweetVC.retweeting = true
                 let index = (sender as! UIButton).tag
-                postTweetVC.replyToTweetID = tweets[index].id
-                postTweetVC.ownerOfTweet = tweets[index].user.screenName
+                postTweetVC.tweetReplyingTo = tweets[index]
             } else if segue.identifier == "fromNewBtnOnHomeToPostTweetVC" {
                 postTweetVC.retweeting = false
+                postTweetVC.returningNewTweet = {[unowned self] tweet in
+                    if let newTweet = tweet {
+                        self.tweets.insert(newTweet, at: 0)
+                        self.tableView.reloadData()
+                    }
+                }
             }
         }
     }

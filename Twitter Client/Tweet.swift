@@ -16,44 +16,62 @@ class Tweet {
     var tweetText:String
     var creationDate:String
     var tweetAge:String
-    var retweetedBy:String?
-    
-    var favoriteCount:Int?
+    var retweetedBy:[String:String]?
+    var currentUserID:String?
+
+    var favoriteCount:Int
     var favoritedBtn = false
     var retweetCount:Int
     var retweetedBtn = false
     
-    init(timeLine: JSON) {
-        id = timeLine["id_str"].string!
-        user = User(user: timeLine["user"])
-        tweetText = timeLine["text"].string!
-        
-        if let favCount = timeLine["favourites_count"].int {
-            favoriteCount = favCount
+    init(id:String , user:User, tweetText:String, creationDate:String, tweetAge:String, retweetedBy: String?) {
+        self.id = id
+        self.user = user
+        self.tweetText = tweetText
+        self.creationDate = creationDate
+        self.tweetAge = tweetAge
+        if let reBy = retweetedBy {
+            self.retweetedBy = ["name": reBy]
         }
-        favoritedBtn = timeLine["favorited"].bool!
-        retweetCount = timeLine["retweet_count"].int!
-        retweetedBtn = timeLine["retweeted"].bool!
+        self.favoriteCount = 0
+        self.favoritedBtn = false
+        self.retweetCount = 0
+        self.retweetedBtn = false
+    }
+    
+    init(dictTweet: JSON) {
+        id = dictTweet["id_str"].string!
+        user = User(user: dictTweet["user"])
+        tweetText = dictTweet["text"].string!
         
-        if let retweetedByUserName = timeLine["retweeted_status"]["user"]["name"].string {
-            retweetedBy = retweetedByUserName
+        if let currentUserRetweet = dictTweet["current_user_retweet"].dictionaryObject {
+            currentUserID = currentUserRetweet["id_str"] as? String
+        }
+        
+        favoriteCount = dictTweet["favorite_count"].int!
+        favoritedBtn = dictTweet["favorited"].bool!
+        retweetCount = dictTweet["retweet_count"].int!
+        retweetedBtn = dictTweet["retweeted"].bool!
+        
+        if let retweetedByUserName = dictTweet["retweeted_status"]["user"]["name"].string {
+            retweetedBy?["name"] = retweetedByUserName
+            retweetedBy?["id"] = dictTweet["retweeted_status"]["user"]["id_str"].string!
         }
         
         let formatter = DateFormatter()
         formatter.dateFormat = "E M d HH:mm:ss Z y"
-        let createdAtString = timeLine["created_at"].string!
+        let createdAtString = dictTweet["created_at"].string!
         let currentTime = Date()
         let createdAt = formatter.date(from: createdAtString)
-        let requestedComponent: Set<Calendar.Component> = [.year,.month,.day,.hour,.minute,.second]
+        let requestedComponent:Set<Calendar.Component> = [.year,.month,.day,.hour,.minute,.second]
         let userCalendar = Calendar.current
         let timeDifference = userCalendar.dateComponents(requestedComponent, from: createdAt!, to: currentTime)
-        let date = formatter.date(from: createdAtString)!
         formatter.dateStyle = .short
         formatter.timeStyle = .short
-        creationDate = formatter.string(from: date)
+        creationDate = formatter.string(from: createdAt!)
         if timeDifference.day! > 0 || timeDifference.month! > 0 || timeDifference.year! > 0 {
             formatter.timeStyle = .none
-            tweetAge = formatter.string(from: date)
+            tweetAge = formatter.string(from: createdAt!)
         } else if timeDifference.hour! > 0 {
             tweetAge = "\(timeDifference.hour!)h"
         } else if timeDifference.minute! > 0 {

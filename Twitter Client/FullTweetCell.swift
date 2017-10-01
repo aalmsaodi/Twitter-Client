@@ -43,12 +43,12 @@ class FullTweetCell: UITableViewCell {
             }
 
             if tweet.retweetedBtn {
-                retweetBtn.imageView?.image = UIImage(named: "retweet-icon-red")
+                retweetBtn.imageView?.image = UIImage(named: "retweet-icon-green")
             } else {
                 retweetBtn.imageView?.image = UIImage(named: "retweet-icon")
             }
             
-            if let retweetedBy = tweet.retweetedBy {
+            if let retweetedBy = tweet.retweetedBy?["name"] {
                 didRetweetedText.text = "\(retweetedBy) retweeted"
                 didRetweetedImage.isHidden = false
                 didRetweetedText.isHidden = false
@@ -69,16 +69,18 @@ class FullTweetCell: UITableViewCell {
     
     @IBAction func retweetBtnTapped(_ sender: Any) {
         if tweet.retweetedBtn {
-            TwitterClient.shared?.retweetIt(id: tweet.id, completion: { (error: Error?) in
+            TwitterClient.shared?.unretweetIt(tweet: tweet, completion: { (error: Error?) in
                 if error == nil {
                     self.tweet.retweetedBtn = false
+                    self.tweet.retweetCount -= 1
                     self.retweetBtn.imageView?.image = UIImage(named: "retweet-icon")
                 }
             })
         } else {
-            TwitterClient.shared?.retweetIt(id: tweet.id, completion: { (error: Error?) in
+            TwitterClient.shared?.retweetIt(id: tweet.id, completion: { (error) in
                 if error == nil {
                     self.tweet.retweetedBtn = true
+                    self.tweet.retweetCount += 1
                     self.retweetBtn.imageView?.image = UIImage(named: "retweet-icon-green")
                 }
             })
@@ -90,6 +92,7 @@ class FullTweetCell: UITableViewCell {
             TwitterClient.shared?.destroyFavorite(id: tweet.id, completion: { error in
                 if error == nil {
                     self.tweet.favoritedBtn = false
+                    self.tweet.favoriteCount -= 1
                     self.favorBtn.imageView?.image = UIImage(named: "favor-icon")
                 }
             })
@@ -97,6 +100,7 @@ class FullTweetCell: UITableViewCell {
             TwitterClient.shared?.createFavorite(id: tweet.id, completion: { error in
                 if error == nil {
                     self.tweet.favoritedBtn = true
+                    self.tweet.favoriteCount += 1
                     self.favorBtn.imageView?.image = UIImage(named: "favor-icon-red")
                 }
             })
