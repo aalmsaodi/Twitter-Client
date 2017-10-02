@@ -1,7 +1,7 @@
 # Twitter Client
 This is a light Twitter clinet iOS App. It uses Twitter OAuth 1.1 API to login, check timeline, tweet, retweet, favorite and more!
 
-Time spent:  hours spent in total
+Time spent: +40 hours spent in total
 
 Completed features:
 * [x] Required: User can sign in using OAuth login flow
