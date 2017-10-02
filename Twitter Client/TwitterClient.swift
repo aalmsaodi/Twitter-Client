@@ -1,167 +1,192 @@
-////
-////  TwitterClient.swift
-////  Twitter Client
-////
-////  Created by user on 9/26/17.
-////  Copyright © 2017 YSH. All rights reserved.
-////
 //
-//import Foundation
-//import Alamofire
-//import OAuthSwift
-//import OAuthSwiftAlamofire
-//import KeychainAccess
-//import SwiftyJSON
+//  TwitterClient.swift
+//  Twitter Client
 //
-//var loggedInUser:User!
+//  Created by user on 9/26/17.
+//  Copyright © 2017 YSH. All rights reserved.
 //
-//class TwitterClient: SessionManager {
-//    
-//    static var shared: TwitterClient = TwitterClient()
-//    
-//    var oauthManager: OAuth1Swift!
-//    
-//    static let consumerKey = "3x5uWdsAUIVb7IvLTiiRl4mrY"
-//    static let consumerSecret = "Fgu2D5y1Cq3moOSMx1nbJW2SzCDSvINoCoGU38SjwJtn5bXNYt"
-//    
-//    static let requestTokenURL = "https://api.twitter.com/oauth/request_token"
-//    static let authorizeURL = "https://api.twitter.com/oauth/authorize"
-//    static let accessTokenURL = "https://api.twitter.com/oauth/access_token"
-//    
-//    static let callbackURLString = "TwitterClient://"
-//    
-//    func postNewTweet(tweet:String, completion: @escaping (Error?)->() ) {
-//        let params: Parameters = ["status": tweet]
-//        request(URL(string: "https://api.twitter.com/1.1/statuses/update.json")!, method: .post, parameters: params)
-//            .validate()
-//            .responseJSON { response in
-//                switch response.result {
-//                case .failure(let error):
-//                    completion(error)
-//                    return
-//                case .success:
-//                    completion(nil)
-//                    return
-//                }
-//        }
-//    }
-//    
-//    func login(success: @escaping () -> (), failure: @escaping (Error?) -> ()) {
-//        
-//        let callbackURL = URL(string: TwitterClient.callbackURLString)!
-//        oauthManager.authorize(withCallbackURL: callbackURL, success: { (credential, _response, parameters) in
-//            
-//            self.save(credential: credential)
-//            
-//            self.getCurrentAccount(completion: { (user, error) in
-//                if let error = error {
-//                    failure(error)
-//                } else if let user = user {
-//                    loggedInUser = user
-//                    print("Welcome \(user.name)")
-//                    
-//                    // MARK: TODO: set User.current, so that it's persisted
-//                    
-//                    success()
-//                }
-//            })
-//        }) { (error) in
-//            failure(error)
-//        }
-//    }
-//    
-//    func logout() {
-//        clearCredentials()
-//        loggedInUser = nil
-//        NotificationCenter.default.post(name: NSNotification.Name("didLogout"), object: nil)
-//    }
-//    
-//
-//    
-//    func getHomeTimeLine(completion: @escaping ([Tweet]?, Error?) -> ()) {
-//        request(URL(string: "https://api.twitter.com/1.1/statuses/home_timeline.json")!, method: .get)
-//            .validate()
-//            .responseJSON { (response) in
-//                switch response.result {
-//                case .failure(let error):
-//                    completion(nil, error)
-//                    return
-//                case .success:
-//                    guard let tweetDictionaries = response.result.value as? [[String: Any]] else {
-//                        print("Failed to parse tweets")
-//                        let error = NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey : "Failed to parse tweets"])
-//                        completion(nil, error)
-//                        return
-//                    }
-//                    
-//                    let tweets = tweetDictionaries.flatMap({ (dictionary) -> Tweet in
-//                        Tweet(timeLine: JSON(dictionary))
-//                    })
-//                    completion(tweets, nil)
-//                }
-//        }
-//    }
-//
-//    
-//    // Private init for singleton only
-//    private init() {
-//        super.init()
-//        
-//        // Create an instance of OAuth1Swift with credentials and oauth endpoints
-//        oauthManager = OAuth1Swift(
-//            consumerKey: TwitterClient.consumerKey,
-//            consumerSecret: TwitterClient.consumerSecret,
-//            requestTokenUrl: TwitterClient.requestTokenURL,
-//            authorizeUrl: TwitterClient.authorizeURL,
-//            accessTokenUrl: TwitterClient.accessTokenURL
-//        )
-//        
-//        // Retrieve access token from keychain if it exists
-//        if let credential = retrieveCredentials() {
-//            oauthManager.client.credential.oauthToken = credential.oauthToken
-//            oauthManager.client.credential.oauthTokenSecret = credential.oauthTokenSecret
-//        }
-//        
-//        // Assign oauth request adapter to Alamofire SessionManager adapter to sign requests
-//        adapter = oauthManager.requestAdapter
-//    }
-//    
-//    // MARK: Handle url
-//    // Finish oauth process by fetching access token
-//    func handle(url: URL) {
-//        OAuth1Swift.handle(url: url)
-//    }
-//    
-//    // MARK: Save Tokens in Keychain
-//    private func save(credential: OAuthSwiftCredential) {
-//        
-//        // Store access token in keychain
-//        let keychain = Keychain()
-//        let data = NSKeyedArchiver.archivedData(withRootObject: credential)
-//        keychain[data: "twitter_credentials"] = data
-//    }
-//    
-//    // MARK: Retrieve Credentials
-//    private func retrieveCredentials() -> OAuthSwiftCredential? {
-//        let keychain = Keychain()
-//        
-//        if let data = keychain[data: "twitter_credentials"] {
-//            let credential = NSKeyedUnarchiver.unarchiveObject(with: data) as! OAuthSwiftCredential
-//            return credential
-//        } else {
-//            return nil
-//        }
-//    }
-//    
-//    // MARK: Clear tokens in Keychain
-//    private func clearCredentials() {
-//        // Store access token in keychain
-//        let keychain = Keychain()
-//        do {
-//            try keychain.remove("twitter_credentials")
-//        } catch let error {
-//            print("error: \(error)")
-//        }
-//    }
-//    
-//}
+
+import UIKit
+import AFNetworking
+import BDBOAuth1Manager
+import SwiftyJSON
+
+class TwitterClient: BDBOAuth1RequestOperationManager {
+    
+    static var loggedInUser:User!
+    static let path = Bundle.main.path(forResource: "TwitterConstants", ofType: "plist")!
+    static let twitterConstants = NSDictionary(contentsOfFile: path) as! [String: String]
+    static let shared = TwitterClient(baseURL: URL(string:twitterConstants["twitterBaseURL"]!), consumerKey: twitterConstants["consumerKey"], consumerSecret: twitterConstants["consumerSecret"])
+    
+    func searchTweets(offset:String?, term:String, completion: @escaping ([Tweet]?, Error?) -> ()) {
+        var params: [String:Any] = ["q": term]
+        if let offset_id = offset {
+            params["max_id"] = offset_id
+        }
+        get("1.1/search/tweets.json", parameters: params, success: { (operation: AFHTTPRequestOperation, response: Any) in
+            guard let responseDictionary = response as? [String:Any], let tweetsNSArray = responseDictionary["statuses"] as? NSArray else {
+                completion(nil, "No search results was able to fetch" as? Error)
+                return
+            }
+            let tweets = tweetsNSArray.flatMap({ (dictionary) -> Tweet in
+                Tweet(dictTweet: JSON(dictionary))
+            })
+            completion(tweets, nil)
+        }) { (operation: AFHTTPRequestOperation?, error: Error) in
+            completion(nil, error)
+        }
+    }
+    
+    func unretweetIt(tweet:Tweet, completion: @escaping (Error?)->()) {
+        var original_tweet_id:String!
+        // step 1: Determine the id of the original tweet.
+        if !tweet.retweetedBtn {
+            completion("you cannot unretweet a tweet that has not retweeted" as? Error)
+        } else if tweet.retweetedBy?["name"] == nil {
+            original_tweet_id = tweet.id
+        } else {
+            original_tweet_id = tweet.retweetedBy?["id"]
+        }
+        
+        // step 2: Get id of the logged-in user's retweet.
+        TwitterClient.shared?.getFullTweet(id: original_tweet_id, includeMyRetweet: "t") { (tweet, error) in
+            if let fetchedTweet = tweet {
+        // step 3: Step 3: Delete the retweet
+                if let retweet_id = fetchedTweet.currentUserID {
+                    TwitterClient.shared?.destroyTweet(id: retweet_id) { error in
+                        completion(error)
+                    }
+                }
+            } else {
+                completion("untweeting failed!! it was unable to fetch the original tweet" as? Error)
+            }
+        }
+    }
+    
+    func retweetIt(id:String, completion: @escaping (Error?)->() ) {
+        let params: [String:Any] = ["id": id]
+        post("1.1/statuses/retweet.json", parameters: params, success: { (operation:AFHTTPRequestOperation, response: Any) in
+            completion(nil)
+        }) { (operation: AFHTTPRequestOperation?, error:Error) in
+            completion(error)
+        }
+    }
+    
+    func destroyTweet(id:String, completion: @escaping (Error?) -> ()) {
+        let params = ["id": id]
+        post("1.1/statuses/destroy.json", parameters: params, success: { (operation:AFHTTPRequestOperation, response: Any) in
+            print("Tweet was destroyed, succes!")
+            completion(nil)
+        }) { (operation: AFHTTPRequestOperation?, error:Error) in
+            completion("No tweet was destroyed, fail!" as? Error)
+        }
+    }
+    
+    func getFullTweet(id:String, includeMyRetweet:String, completion: @escaping (Tweet?, Error?) -> ()) {
+        let params = ["id": id, "include_my_retweet": includeMyRetweet]
+        get("1.1/statuses/show.json", parameters: params, success: { (operation: AFHTTPRequestOperation, response: Any) in
+            guard let tweetDict = response as? [String:Any] else {
+                completion(nil, "Unable to fetch tweet with id \(id)" as? Error)
+                return
+            }
+            completion(Tweet(dictTweet: JSON(tweetDict)), nil)
+        }) { (operation: AFHTTPRequestOperation?, error: Error) in
+            completion(nil, error)
+        }
+    }
+    
+    func createFavorite(id:String, completion: @escaping (Error?)->() ) {
+        let params = ["id": id]
+        
+        post("1.1/favorites/create.json", parameters: params, success: { (operation:AFHTTPRequestOperation, response: Any) in
+            print("Favorite tweet, succes!")
+            completion(nil)
+        }) { (operation: AFHTTPRequestOperation?, error:Error) in
+            completion(error)
+        }
+    }
+    
+    func destroyFavorite(id:String, completion: @escaping (Error?)->() ) {
+        let params = ["id": id]
+        
+        post("1.1/favorites/destroy.json", parameters: params, success: { (operation:AFHTTPRequestOperation, response: Any) in
+            print("Destroy tweet, succes!")
+            completion(nil)
+        }) { (operation: AFHTTPRequestOperation?, error:Error) in
+            completion(error)
+        }
+    }
+    
+    func postTweet(tweet:String, replyToTweetID:String?, ownerOfTweet:String?, completion: @escaping (Error?, _ newTweetID:String?)->() ) {
+        var params:[String:Any]!
+        if let replyingTo = replyToTweetID, let ownerOfTweet = ownerOfTweet { //Reply to a Tweet
+           params = ["status": "\(ownerOfTweet) \(tweet)", "in_reply_to_status_id":replyingTo]
+        } else { //Post a new Tweet
+           params = ["status": tweet]
+        }
+        post("1.1/statuses/update.json", parameters: params, success: { (operation:AFHTTPRequestOperation, response: Any) in
+            print("Post new tweet, succes!")
+            let retweetedID = JSON(response)["id_str"].string
+            completion(nil, retweetedID)
+        }) { (operation: AFHTTPRequestOperation?, error:Error) in
+            completion(error, nil)
+        }
+    }
+    
+    func getHomeTimeLine(offset:String?, completion: @escaping ([Tweet]?, Error?) -> ()) {
+        var params:[String:Any]!
+        
+        if let offset_id = offset {
+            params = ["max_id": offset_id]
+        }
+        get("1.1/statuses/home_timeline.json", parameters: params, success: { (operation:AFHTTPRequestOperation, response: Any) in
+            guard let tweetDictionaries = response as? [[String: Any]] else {
+                let error = "Failed to parse tweets" as! Error
+                completion(nil, error)
+                return
+            }
+            let tweets = tweetDictionaries.flatMap({ (dictionary) -> Tweet in
+                Tweet(dictTweet: JSON(dictionary))
+            })
+            completion(tweets, nil)
+        }) { (operation: AFHTTPRequestOperation?, error: Error) in
+            completion(nil, error)
+        }
+    }
+    
+    func getCurrentAccount(completion: @escaping (User?, Error?) -> ()) {
+        get("1.1/account/verify_credentials.json", parameters: nil, success: { (operation: AFHTTPRequestOperation, response: Any) in
+            guard let userDictionary = response as? [String:Any] else {
+                completion(nil, "Unable to create user dictionary" as? Error)
+                return
+            }
+            completion(User(user: JSON(userDictionary)), nil)
+        }) { (operation: AFHTTPRequestOperation?, error: Error) in
+            completion(nil, error)
+        }
+    }
+    
+    func login() {
+        requestSerializer.removeAccessToken()
+        fetchRequestToken(withPath: "oauth/request_token", method: "GET", callbackURL: URL(string:"TwitterClient://oauth"), scope: nil, success: { (requestToken: BDBOAuth1Credential!) in
+            if let authURL = URL(string:"https://api.twitter.com/oauth/authorize?oauth_token=\(requestToken.token as String)") {
+                print ("Got request token")
+                UIApplication.shared.open(authURL, options: [:], completionHandler: nil)
+            }
+        }) { (error: Error?) in
+            print(error ?? "Failed to log in")
+        }
+    }
+    
+    func logout() {
+        requestSerializer.removeAccessToken()
+        UserDefaults.standard.removeObject(forKey: "loggedUser")
+        print("Have a good day \(TwitterClient.loggedInUser.name)")
+        TwitterClient.loggedInUser = nil
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let loginVC = storyboard.instantiateViewController(withIdentifier: "loginVC")
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        appDelegate.window?.rootViewController = loginVC
+    }
+    
+}

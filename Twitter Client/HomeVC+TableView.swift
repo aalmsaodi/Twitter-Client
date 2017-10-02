@@ -10,19 +10,6 @@ import UIKit
 
 extension HomeVC: UITableViewDelegate, UITableViewDataSource {
     
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        
-        return tweets.count
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "fullTweetCell") as? FullTweetCell else {return UITableViewCell()}
-        cell.tweet = tweets[indexPath.row]
-        cell.replyBtn.tag = indexPath.row
-        return cell
-    }
-    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "fromCellToTweetVC" {
             let tweetVC = segue.destination as! TweetVC
@@ -33,6 +20,11 @@ extension HomeVC: UITableViewDelegate, UITableViewDataSource {
                     self.tweets.insert(newTweet, at: 0)
                     self.tableView.reloadData()
                 }
+            }
+            tweetVC.returnCurrentStatesOfRetweetAndFavorBtns = {[unowned self] (retweetBtn, favorBtn) in
+                self.tweets[(index?.row)!].retweetedBtn = retweetBtn
+                self.tweets[(index?.row)!].retweetedBtn = retweetBtn
+                self.tableView.reloadData()
             }
         } else {
             let postTweetVC = segue.destination as! PostTweetVC
@@ -56,6 +48,18 @@ extension HomeVC: UITableViewDelegate, UITableViewDataSource {
                 }
             }
         }
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return tweets.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "fullTweetCell") as? FullTweetCell else {return UITableViewCell()}
+        cell.tweet = tweets[indexPath.row]
+        cell.replyBtn.tag = indexPath.row
+        return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

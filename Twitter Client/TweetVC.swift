@@ -26,19 +26,22 @@ class TweetVC: UIViewController {
     
     var tweet:Tweet!
     var returningNewTweet: ((Tweet?)->())?
+    var returnCurrentStatesOfRetweetAndFavorBtns: ((Bool, Bool)->())?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         if let url = URL(string: tweet.user.avatarImageUrl) {
             avatarImage.setImageWith(url)
+            avatarImage.layer.cornerRadius = 5.0
+            avatarImage.layer.masksToBounds = true
         }
         userNameLabel.text = tweet.user.name
         screenNameLabel.text = tweet.user.screenName
-        
         tweetTextLabel.text = tweet.tweetText
-        
         creationDateLabel.text = tweet.creationDate
+        numFavoritsLabel.text = "\(tweet.favoriteCount)"
+        numRetweetsLabel.text = "\(tweet.retweetCount)"
         
         if tweet.favoritedBtn {
             favorBtn.imageView?.image = UIImage(named: "favor-icon-red")
@@ -50,9 +53,6 @@ class TweetVC: UIViewController {
             retweetBtn.imageView?.image = UIImage(named: "retweet-icon")
         }
         
-        numFavoritsLabel.text = "\(tweet.favoriteCount)"
-        numRetweetsLabel.text = "\(tweet.retweetCount)"
-        
         if let retweetedBy = tweet.retweetedBy?["name"] {
             retweetedByLabel.text = "\(retweetedBy) retweeted"
         } else {
@@ -60,6 +60,10 @@ class TweetVC: UIViewController {
             retweetedByLabel.isHidden = true
             avatarImageVerticalConstraint.constant -= retweetedByImage.bounds.height
         }
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        returnCurrentStatesOfRetweetAndFavorBtns!(tweet.retweetedBtn, tweet.favoritedBtn)
     }
 
     @IBAction func replyBtnTapped(_ sender: Any) {
@@ -96,6 +100,8 @@ class TweetVC: UIViewController {
                     self.tweet.favoriteCount -= 1
                     self.numFavoritsLabel.text = String(self.tweet.favoriteCount)
                     self.favorBtn.imageView?.image = UIImage(named: "favor-icon")
+                } else {
+                    self.favorBtn.imageView?.image = UIImage(named: "favor-icon-red")
                 }
             })
         } else {

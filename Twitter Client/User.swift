@@ -21,7 +21,7 @@ class User: NSObject, NSCoding {
         screenName = "@\(user["screen_name"].string!)"
     }
     
-    init(name:String, screen:String, avatarUrl:String){
+    private init(name:String, screen:String, avatarUrl:String){
         self.name = name
         self.screenName = screen
         self.avatarImageUrl = avatarUrl

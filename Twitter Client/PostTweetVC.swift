@@ -54,7 +54,7 @@ class PostTweetVC: UIViewController, UITextViewDelegate {
         let tap = UITapGestureRecognizer(target: self, action: #selector(dismissCheckView))
         tap.delegate = self as? UIGestureRecognizerDelegate
         
-        if retweeting { //Replying to a Tweet
+        if retweeting { //****************** Replying to Tweet ***********************
             TwitterClient.shared?.postTweet(tweet: tweet, replyToTweetID: tweetReplyingTo?.id, ownerOfTweet: tweetReplyingTo?.user.screenName) { [unowned self] (error, newTweetID) in
                 if error == nil {
                     MRProgressOverlayView.showOverlayAdded(to: self.view, title: "Reply Sent", mode: .checkmark, animated: true)
@@ -66,7 +66,7 @@ class PostTweetVC: UIViewController, UITextViewDelegate {
                 self.view.addGestureRecognizer(tap)
             }
             
-        } else { //Posting new Tweet
+        } else { //****************** Posting new Tweet ***********************
             TwitterClient.shared?.postTweet(tweet: tweet, replyToTweetID: nil, ownerOfTweet: nil) { [unowned self] (error, newTweetID) in
                 if error == nil {
                     MRProgressOverlayView.showOverlayAdded(to: self.view, title: "Tweet Sent", mode: .checkmark, animated: true)

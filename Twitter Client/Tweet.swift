@@ -18,7 +18,6 @@ class Tweet {
     var tweetAge:String
     var retweetedBy:[String:String]?
     var currentUserID:String?
-
     var favoriteCount:Int
     var favoritedBtn = false
     var retweetCount:Int
@@ -53,9 +52,12 @@ class Tweet {
         retweetCount = dictTweet["retweet_count"].int!
         retweetedBtn = dictTweet["retweeted"].bool!
         
-        if let retweetedByUserName = dictTweet["retweeted_status"]["user"]["name"].string {
-            retweetedBy?["name"] = retweetedByUserName
-            retweetedBy?["id"] = dictTweet["retweeted_status"]["user"]["id_str"].string!
+        if let retweetedByUserName = dictTweet["retweeted_status"]["user"]["name"].string, let retweetedByUserID = dictTweet["retweeted_status"]["user"]["id_str"].string {
+            retweetedBy = ["name": retweetedByUserName, "id": retweetedByUserID]
+            
+            if let endOfRT = tweetText.range(of: ": ") {
+                tweetText = tweetText.substring(from: endOfRT.upperBound)
+            }
         }
         
         let formatter = DateFormatter()

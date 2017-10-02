@@ -19,7 +19,6 @@ class FullTweetCell: UITableViewCell {
     @IBOutlet weak var userLinkLabel: UILabel!
     @IBOutlet weak var tweetTimeLabel: UILabel!
     @IBOutlet weak var tweetTextLabel: UILabel!
-
     @IBOutlet weak var replyBtn: UIButton!
     @IBOutlet weak var retweetBtn: UIButton!
     @IBOutlet weak var favorBtn: UIButton!
@@ -28,12 +27,12 @@ class FullTweetCell: UITableViewCell {
         didSet{
             if let url = URL(string: tweet.user.avatarImageUrl) {
                 avatarImage.setImageWith(url)
+                avatarImage.layer.cornerRadius = 5.0
+                avatarImage.layer.masksToBounds = true
             }
             userNameLabel.text = tweet.user.name
             userLinkLabel.text = tweet.user.screenName
-            
             tweetTextLabel.text = tweet.tweetText
-            
             tweetTimeLabel.text = tweet.tweetAge
             
             if tweet.favoritedBtn {
@@ -41,7 +40,7 @@ class FullTweetCell: UITableViewCell {
             }  else {
                 favorBtn.imageView?.image = UIImage(named: "favor-icon")
             }
-
+            
             if tweet.retweetedBtn {
                 retweetBtn.imageView?.image = UIImage(named: "retweet-icon-green")
             } else {
@@ -59,12 +58,6 @@ class FullTweetCell: UITableViewCell {
                 avatarImageVerticalConstraint.constant = 5
             }
         }
-    }
-
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        avatarImage.layer.cornerRadius = 5.0
-        avatarImage.layer.masksToBounds = true
     }
     
     @IBAction func retweetBtnTapped(_ sender: Any) {
