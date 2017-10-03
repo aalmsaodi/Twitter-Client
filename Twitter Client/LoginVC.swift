@@ -11,17 +11,17 @@ import AFNetworking
 import BDBOAuth1Manager
 
 class LoginVC: UIViewController {
-    
-    @IBOutlet weak var loginBtn: UIButton!
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        loginBtn.layer.cornerRadius = loginBtn.bounds.height/2
-        loginBtn.layer.masksToBounds = true
-    }
-
-    @IBAction func loginTapped(_ sender: Any) {
-        TwitterClient.shared?.login()
-    }
+  
+  @IBOutlet weak var loginBtn: UIButton!
+  
+  override func viewDidLoad() {
+    super.viewDidLoad()
+    loginBtn.layer.cornerRadius = loginBtn.bounds.height/2
+    loginBtn.layer.masksToBounds = true
+  }
+  
+  @IBAction func loginTapped(_ sender: Any) {
+    TwitterClient.shared?.login()
+  }
 }
 
