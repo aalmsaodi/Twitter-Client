@@ -60,7 +60,7 @@ class FullTweetCell: UITableViewCell {
         }
     }
     
-    @IBAction private func retweetBtnTapped(_ sender: Any) {
+    @IBAction private func onRetweetBtn(_ sender: Any) {
         if tweet.isRetweetedBtn {
             tweet.unretweet() {error in
                 if error == nil {
@@ -76,7 +76,7 @@ class FullTweetCell: UITableViewCell {
         }
     }
     
-    @IBAction private func favorBtnTapped(_ sender: Any) {
+    @IBAction private func onFavorBtn(_ sender: Any) {
         if tweet.isFavoritedBtn {
             tweet.unfavorite() { error in
                 if error == nil {

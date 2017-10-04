@@ -18,8 +18,23 @@ class TwitterClient: BDBOAuth1RequestOperationManager {
   static let twitterConstants = NSDictionary(contentsOfFile: path) as! [String: String]
   static let shared = TwitterClient(baseURL: URL(string:twitterConstants["twitterBaseURL"]!), consumerKey: twitterConstants["consumerKey"], consumerSecret: twitterConstants["consumerSecret"])
   
+  
+  
+  func getUserProfile(screenName:String, completion: @escaping (User?, Error?) -> ()) {
+    let params = ["screen_name": screenName]
+    get("1.1/users/show.json", parameters: params, success: { (operation: AFHTTPRequestOperation, response: Any) in
+      guard let profileDictionary = response as? [String:Any] else {
+        completion(nil, "Unable to profile dictionary" as? Error)
+        return
+      }
+      completion(User(user: JSON(profileDictionary)), nil)
+    }) { (operation: AFHTTPRequestOperation?, error: Error) in
+      completion(nil, error)
+    }
+  }
+  
   func searchTweets(offset:String?, term:String, completion: @escaping ([Tweet]?, Error?) -> ()) {
-    var params: [String:Any] = ["q": term]
+    var params = ["q": term]
     if let offset = offset {
       params["max_id"] = offset
     }
@@ -64,7 +79,7 @@ class TwitterClient: BDBOAuth1RequestOperationManager {
   }
   
   func retweetIt(id:String, completion: @escaping (Error?)->() ) {
-    let params: [String:Any] = ["id": id]
+    let params = ["id": id]
     post("1.1/statuses/retweet.json", parameters: params, success: { (operation:AFHTTPRequestOperation, response: Any) in
       completion(nil)
     }) { (operation: AFHTTPRequestOperation?, error:Error) in
@@ -185,9 +200,9 @@ class TwitterClient: BDBOAuth1RequestOperationManager {
     print("Have a good day \(TwitterClient.loggedInUser.name)")
     TwitterClient.loggedInUser = nil
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
-    let loginVC = storyboard.instantiateViewController(withIdentifier: "loginVC")
+    let loginViewController = storyboard.instantiateViewController(withIdentifier: "loginViewController")
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    appDelegate.window?.rootViewController = loginVC
+    appDelegate.window?.rootViewController = loginViewController
   }
   
 }

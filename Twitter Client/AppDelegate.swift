@@ -22,8 +22,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       TwitterClient.loggedInUser = user
       print("welecome \(user.name)")
       let storyboard = UIStoryboard(name: "Main", bundle: nil)
-      let navigationgController = storyboard.instantiateViewController(withIdentifier: "navigationController") as! UINavigationController
-      window?.rootViewController = navigationgController
+      
+      let burgerViewController = storyboard.instantiateViewController(withIdentifier: "burgerViewController") as! BurgerViewController
+      window?.rootViewController = burgerViewController
+      
+      let menuViewController = storyboard.instantiateViewController(withIdentifier: "menuViewController") as! MenuViewController
+      
+      menuViewController.burgerViewController = burgerViewController
+      burgerViewController.menuViewController = menuViewController
     }
     
     return true
@@ -43,8 +49,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
           let encodedData:Data = NSKeyedArchiver.archivedData(withRootObject:user)
           UserDefaults.standard.set(encodedData, forKey: "loggedUser")
           let storyboard = UIStoryboard(name: "Main", bundle: nil)
-          let navigationgController = storyboard.instantiateViewController(withIdentifier: "navigationController") as! UINavigationController
-          self.window?.rootViewController = navigationgController
+          let burgerViewController = storyboard.instantiateViewController(withIdentifier: "burgerViewController")as! BurgerViewController
+          self.window?.rootViewController = burgerViewController
+          
+          let menuViewController = storyboard.instantiateViewController(withIdentifier: "menuViewController") as! MenuViewController
+          
+          menuViewController.burgerViewController = burgerViewController
+          burgerViewController.menuViewController = menuViewController
         } else {
           print(error ?? "No user got logged in")
         }
