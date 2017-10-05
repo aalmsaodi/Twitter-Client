@@ -28,9 +28,9 @@ class MenuViewController: UIViewController, UITableViewDelegate, UITableViewData
     tableView.dataSource = self
     
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
-    profileNavigationController = storyboard.instantiateViewController(withIdentifier: "profileNavigationController")
-    homeNavigationController = storyboard.instantiateViewController(withIdentifier: "homeNavigationController")
-    mentionsNavigationController = storyboard.instantiateViewController(withIdentifier: "mentionsNavigationController")
+    profileNavigationController = storyboard.instantiateViewController(withIdentifier: "profileNavigationController") as! UINavigationController
+    homeNavigationController = storyboard.instantiateViewController(withIdentifier: "homeNavigationController") as! UINavigationController
+    mentionsNavigationController = storyboard.instantiateViewController(withIdentifier: "mentionsNavigationController") as! UINavigationController
     
     viewControllers.append(profileNavigationController)
     viewControllers.append(homeNavigationController)
@@ -52,6 +52,17 @@ class MenuViewController: UIViewController, UITableViewDelegate, UITableViewData
   func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
     tableView.deselectRow(at: indexPath, animated: true)
     
+    switch indexPath.row {
+    case Int(viewControllers.index(of: profileNavigationController)!):
+      let profileViewController = profileNavigationController.childViewControllers[0] as! ProfileViewController
+      profileViewController.user = TwitterClient.loggedInUser
+    case Int(viewControllers.index(of: homeNavigationController)!):
+      break
+    case Int(viewControllers.index(of: mentionsNavigationController)!):
+      break
+    default:
+      break
+    }
     burgerViewController.contentViewController = viewControllers[indexPath.row]
   }
   

@@ -539,7 +539,7 @@
                         <outlet property="followingsCountLabel" destination="oPk-il-yXD" id="cET-o4-ALx"/>
                         <outlet property="profileContentTopConstraint" destination="yTy-4h-xkO" id="T9C-m7-qoF"/>
                         <outlet property="screenNameLabel" destination="wJs-LZ-i2M" id="lfm-aV-h2U"/>
-                        <outlet property="tabelView" destination="Uxp-Jc-yXa" id="x5Y-H6-6hz"/>
+                        <outlet property="tableView" destination="Uxp-Jc-yXa" id="ok4-xX-oDj"/>
                         <outlet property="tweetsCountLabel" destination="y1k-yR-cEj" id="e3N-Vt-0Kq"/>
                         <outlet property="usernameLabel" destination="ltB-2W-39j" id="MMd-xg-Kfb"/>
                     </connections>
@@ -1024,6 +1024,6 @@
         <image name="send" width="28" height="28"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="9jc-pt-EKG"/>
+        <segue reference="mgT-Gv-BcD"/>
     </inferredMetricsTieBreakers>
 </document>
