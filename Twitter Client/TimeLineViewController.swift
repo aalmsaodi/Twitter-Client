@@ -1,5 +1,5 @@
 //
-//  HomeViewController.swift
+//  TimeLineViewController.swift
 //
 //
 //  Created by user on 9/27/17.
@@ -8,16 +8,31 @@
 
 import UIKit
 
-class HomeViewController: UIViewController {
+enum TimeLineType : String {
+  case homeTimeLine = "homeTimeLineViewController"
+  case mentionsTimeLine = "mentionsTimeLineViewController"
+}
+
+class TimeLineViewController: UIViewController {
   
-  @IBOutlet weak var tableView: UITableView!
-  var tweets:[Tweet] = []
-  var refreshControl:UIRefreshControl!
-  var loadingMoreView:InfiniteScrollActivityView!
-  var isMoreDataLoading:Bool!
-  var searchBar:UISearchBar!
+  @IBOutlet weak fileprivate var tableView: UITableView!
+  fileprivate var tweets:[Tweet] = []
+  fileprivate var refreshControl:UIRefreshControl!
+  fileprivate var loadingMoreView:InfiniteScrollActivityView!
+  fileprivate var isMoreDataLoading:Bool!
+  fileprivate var searchBar:UISearchBar!
+  
+  public var timeLineType:TimeLineType!
+  
+  func somethingWasTapped(_ sth: AnyObject){
+    print("Hey there")
+  }
   
   override func viewDidLoad() {
+    super.viewDidLoad()
+    let tapGestureRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(somethingWasTapped(_:)))
+    self.navigationController?.navigationBar.addGestureRecognizer(tapGestureRecognizer)
+    
     super.viewDidLoad()
     tableView.delegate = self
     tableView.dataSource = self
@@ -36,7 +51,7 @@ class HomeViewController: UIViewController {
     searchBar.sizeToFit()
     navigationItem.titleView = searchBar
     
-    TwitterClient.shared?.getHomeTimeLine(offset: nil) { (tweets, error) in
+    TwitterClient.shared?.getTimeLine(type: timeLineType, offset: nil) { (tweets, error) in
       if let tweets = tweets {
         self.tweets = tweets
         self.tableView.reloadData()
@@ -52,11 +67,11 @@ class HomeViewController: UIViewController {
   }
 }
 
-
-extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
+// Mark - Table View Delegates
+extension TimeLineViewController: UITableViewDelegate, UITableViewDataSource {
   
   override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-    if segue.identifier == "fromCellToTweetVC" {
+    if segue.identifier == "fromFullTweetCellToTweetVC" {
       let tweetViewController = segue.destination as! TweetViewController
       let index = tableView.indexPath(for: sender as! FullTweetCell)
       tweetViewController.tweet = tweets[(index?.row)!]
@@ -71,6 +86,10 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         self.tweets[(index?.row)!].isRetweetedBtn = retweetBtn
         self.tableView.reloadData()
       }
+    } else if segue.identifier == "fromAvatarInCelltoProfileVC"  {
+      let profileViewController = segue.destination as! ProfileViewController
+      let index = (sender as! UIButton).tag
+      profileViewController.user = tweets[index].user
     } else {
       let postTweetViewController = segue.destination as! PostTweetViewController
       postTweetViewController.returningNewTweet = {[unowned self] tweet in
@@ -101,15 +120,15 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
   
   func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     
-    guard let cell = tableView.dequeueReusableCell(withIdentifier: "fullTweetCell") as? FullTweetCell else {return UITableViewCell()}
+    guard let cell = tableView.dequeueReusableCell(withIdentifier: "fullTweetCell", for: indexPath) as? FullTweetCell else {return UITableViewCell()}
     cell.tweet = tweets[indexPath.row]
-    cell.replyBtn.tag = indexPath.row
+    cell.index = indexPath.row
     return cell
   }
   
   func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
     let cell = tableView.cellForRow(at: indexPath) as! FullTweetCell
-    performSegue(withIdentifier: "fromCellToTweetVC", sender: cell)
+    performSegue(withIdentifier: "fromFullTweetCellToTweetVC", sender: cell)
   }
   
   func tableView(_ tableView: UITableView, estimatedHeightForFooterInSection section: Int) -> CGFloat {
@@ -121,11 +140,11 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
   }
 }
 
-extension HomeViewController: UIScrollViewDelegate {
+extension TimeLineViewController: UIScrollViewDelegate {
   
   func pullRefreshControlAction(_ refreshControl: UIRefreshControl) {
     if searchBar.text == "" { //fetching home timeline
-      TwitterClient.shared?.getHomeTimeLine(offset: nil) { (tweets, error) in
+      TwitterClient.shared?.getTimeLine(type: timeLineType, offset: nil) { (tweets, error) in
         if let tweets = tweets {
           self.tweets = tweets
           self.tableView.reloadData()
@@ -149,7 +168,7 @@ extension HomeViewController: UIScrollViewDelegate {
   
   fileprivate func getMoreResults() {
     if searchBar.text == "" { //fetching more tweets from home timeline
-      TwitterClient.shared?.getHomeTimeLine(offset: tweets.last?.id, completion: { (tweets, error) in
+      TwitterClient.shared?.getTimeLine(type: timeLineType, offset: tweets.last?.id, completion: { (tweets, error) in
         if let tweets = tweets {
           self.tweets.append(contentsOf: tweets.dropFirst()) //drop first repeated tweet
           self.tableView.reloadData()
@@ -188,8 +207,8 @@ extension HomeViewController: UIScrollViewDelegate {
   }
 }
 
-extension HomeViewController: UISearchBarDelegate {
-  
+
+extension TimeLineViewController: UISearchBarDelegate {
   func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
     searchBar.showsCancelButton = true
   }
@@ -210,7 +229,7 @@ extension HomeViewController: UISearchBarDelegate {
     searchBar.showsCancelButton = false
     searchBar.text = ""
     searchBar.resignFirstResponder()
-    TwitterClient.shared?.getHomeTimeLine(offset: nil) { (tweets, error) in
+    TwitterClient.shared?.getTimeLine(type: timeLineType, offset: nil) { (tweets, error) in
       if let tweets = tweets {
         self.tweets = tweets
         self.tableView.reloadData()

@@ -11,15 +11,15 @@ import MRProgress
 
 class PostTweetViewController: UIViewController, UITextViewDelegate {
   
-  @IBOutlet weak var avatarImage: UIImageView!
-  @IBOutlet weak var userNameLabel: UILabel!
-  @IBOutlet weak var screenNameLabel: UILabel!
-  @IBOutlet weak var tweetTextField: UITextView!
-  
-  var retweeting:Bool!
-  var counterLabel:UILabel!
+  @IBOutlet weak private var avatarImage: UIImageView!
+  @IBOutlet weak private var userNameLabel: UILabel!
+  @IBOutlet weak private var screenNameLabel: UILabel!
+  @IBOutlet weak private var tweetTextField: UITextView!
+  private let TWEETLENGTHLIMIT:Int = 140
+  private var counterLabel:UILabel!
+
+  var retweeting:Bool = false
   var tweetReplyingTo:Tweet?
-  let TWEETLENGTHLIMIT:Int = 140
   var returningNewTweet: ((Tweet?)->())?
   
   override func viewDidLoad() {
@@ -27,26 +27,20 @@ class PostTweetViewController: UIViewController, UITextViewDelegate {
     
     tweetTextField.delegate = self
     tweetTextField.becomeFirstResponder()
-    if let url = URL(string: TwitterClient.loggedInUser.avatarImageUrl) {
+    if let url = URL(string: TwitterClient.currentAccount.user.avatarImageUrl) {
       avatarImage.setImageWith(url)
     }
-    userNameLabel.text = TwitterClient.loggedInUser.name
-    screenNameLabel.text = TwitterClient.loggedInUser.screenName
+    userNameLabel.text = TwitterClient.currentAccount.user.name
+    screenNameLabel.text = "@\(TwitterClient.currentAccount.user.screenName)"
     navigationController?.navigationBar.backgroundColor = UIColor.lightGray
     
     if let navigationBar = navigationController?.navigationBar {
       counterLabel = UILabel()
-      counterLabel.center = CGPoint(x: 4*navigationBar.frame.width/5, y: navigationBar.frame.midY)
+      let frame = CGRect(x: 4*navigationBar.frame.width/6, y: 0, width: 50, height: navigationBar.frame.height)
+      counterLabel = UILabel(frame: frame)
       counterLabel.textColor = UIColor.white
       navigationBar.addSubview(counterLabel)
       counterLabel.text = String(TWEETLENGTHLIMIT)
-    }
-  }
-  
-  override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-    if let navigationBar = navigationController?.navigationBar {
-      counterLabel.center = CGPoint(x: 4*navigationBar.frame.width/5, y: navigationBar.frame.midY)
-      counterLabel.autoresizingMask = [UIViewAutoresizing.flexibleLeftMargin, UIViewAutoresizing.flexibleRightMargin, UIViewAutoresizing.flexibleTopMargin, UIViewAutoresizing.flexibleBottomMargin]
     }
   }
   
@@ -62,7 +56,7 @@ class PostTweetViewController: UIViewController, UITextViewDelegate {
     tap.delegate = self as? UIGestureRecognizerDelegate
     
     if retweeting { //****************** Replying to Tweet ***********************
-      TwitterClient.shared?.postTweet(tweet: tweet, replyToTweetID: tweetReplyingTo?.id, ownerOfTweet: tweetReplyingTo?.user.screenName) { [unowned self] (error, newTweetID) in
+      TwitterClient.shared?.postTweet(tweet: tweet, replyToTweetID: tweetReplyingTo?.id, ownerOfTweet: "@\(tweetReplyingTo!.user.screenName)") { [unowned self] (error, newTweetID) in
         if error == nil {
           MRProgressOverlayView.showOverlayAdded(to: self.view, title: "Reply Sent", mode: .checkmark, animated: true)
           self.createTempTweetToShowOnTimeLineWithoutFetching(itIsNewTweet: false, newTweetID: newTweetID!)
@@ -99,7 +93,7 @@ class PostTweetViewController: UIViewController, UITextViewDelegate {
     if itIsNewTweet {
       tweetText = tweetTextField.text!
     } else {
-      let replayingToScreen = (tweetReplyingTo?.user.screenName)!
+      let replayingToScreen = "@\((tweetReplyingTo?.user.screenName)!)"
       tweetText = "\(replayingToScreen) \(tweetTextField.text!)"
       retweetedBy = tweetReplyingTo?.retweetedBy?["name"]
     }
@@ -110,7 +104,7 @@ class PostTweetViewController: UIViewController, UITextViewDelegate {
     let creationDate = formatter.string(from: Date())
     let tweetAge = "0s"
     
-    let newTweet = Tweet(id: newTweetID, user: (TwitterClient.loggedInUser)!, tweetText: tweetText, creationDate: creationDate, tweetAge: tweetAge, retweetedBy: retweetedBy)
+    let newTweet = Tweet(id: newTweetID, user: (TwitterClient.currentAccount.user)!, tweetText: tweetText, creationDate: creationDate, tweetAge: tweetAge, retweetedBy: retweetedBy)
     
     returningNewTweet?(newTweet)
   }

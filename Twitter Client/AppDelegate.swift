@@ -17,10 +17,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
     
-    if let user = UserDefaults.standard.data(forKey: "loggedUser") {
-      let user = NSKeyedUnarchiver.unarchiveObject(with: user) as! User
-      TwitterClient.loggedInUser = user
-      print("welecome \(user.name)")
+    if (TwitterClient.shared?.loadAccounts())! {
+      print("welecome \(TwitterClient.currentAccount.user.name)")
+
       let storyboard = UIStoryboard(name: "Main", bundle: nil)
       
       let burgerViewController = storyboard.instantiateViewController(withIdentifier: "burgerViewController") as! BurgerViewController
@@ -45,9 +44,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       
       TwitterClient.shared?.getCurrentAccount(completion: { (user: User?, error: Error?) in
         if let user = user {
-          TwitterClient.loggedInUser = user
-          let encodedData:Data = NSKeyedArchiver.archivedData(withRootObject:user)
-          UserDefaults.standard.set(encodedData, forKey: "loggedUser")
+          TwitterClient.currentAccount.user = user
+          TwitterClient.accounts.append(Account(user: user, accessToken: accessToken))
+          TwitterClient.shared?.saveAccounts()
+          
           let storyboard = UIStoryboard(name: "Main", bundle: nil)
           let burgerViewController = storyboard.instantiateViewController(withIdentifier: "burgerViewController")as! BurgerViewController
           self.window?.rootViewController = burgerViewController

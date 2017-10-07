@@ -13,15 +13,52 @@ import SwiftyJSON
 
 class TwitterClient: BDBOAuth1RequestOperationManager {
   
-  static var loggedInUser:User!
+  static var currentAccount:Account!
+  static var accounts:[Account] = []
   static let path = Bundle.main.path(forResource: "TwitterConstants", ofType: "plist")!
   static let twitterConstants = NSDictionary(contentsOfFile: path) as! [String: String]
-  static let shared = TwitterClient(baseURL: URL(string:twitterConstants["twitterBaseURL"]!), consumerKey: twitterConstants["consumerKey"], consumerSecret: twitterConstants["consumerSecret"])
+  static let shared = TwitterClient(baseURL: URL(string: twitterConstants["twitterBaseURL"]!), consumerKey: twitterConstants["consumerKey"], consumerSecret: twitterConstants["consumerSecret"])
   
+  func saveAccounts(){
+    let accountsData = NSKeyedArchiver.archivedData(withRootObject: TwitterClient.accounts)
+    UserDefaults.standard.set(accountsData, forKey: "accounts")
+  }
   
+  func loadAccounts() -> Bool{
+    if let accountsData = UserDefaults.standard.object(forKey: "accounts") as? NSData {
+      let accountsArray = NSKeyedUnarchiver.unarchiveObject(with: accountsData as Data) as? [Account]
+      TwitterClient.accounts = accountsArray!
+      TwitterClient.currentAccount = accountsArray?[0]
+      return true
+    } else {
+      return false
+    }
+  }
   
-  func getUserProfile(screenName:String, completion: @escaping (User?, Error?) -> ()) {
-    let params = ["screen_name": screenName]
+  func getUserTimeLine(screenName: String, offset: String?,
+                       completion: @escaping ([Tweet]?, Error?) -> ()) {
+    var params = ["screen_name": screenName]
+    
+    if let offset = offset {
+      params["max_id"] = offset
+    }
+    get("1.1/statuses/user_timeline.json", parameters: params, success: { (operation:AFHTTPRequestOperation, response: Any) in
+      guard let tweetDictionaries = response as? [[String: Any]] else {
+        let error = "Failed to parse tweets" as! Error
+        completion(nil, error)
+        return
+      }
+      let tweets = tweetDictionaries.flatMap({ (dictionary) -> Tweet in
+        Tweet(dictTweet: JSON(dictionary))
+      })
+      completion(tweets, nil)
+    }) { (operation: AFHTTPRequestOperation?, error: Error) in
+      completion(nil, error)
+    }
+  }
+  
+  func getUserProfile(id:String, completion: @escaping (User?, Error?) -> ()) {
+    let params = ["id_str": id]
     get("1.1/users/show.json", parameters: params, success: { (operation: AFHTTPRequestOperation, response: Any) in
       guard let profileDictionary = response as? [String:Any] else {
         completion(nil, "Unable to profile dictionary" as? Error)
@@ -149,13 +186,21 @@ class TwitterClient: BDBOAuth1RequestOperationManager {
     }
   }
   
-  func getHomeTimeLine(offset:String?, completion: @escaping ([Tweet]?, Error?) -> ()) {
+  func getTimeLine(type: TimeLineType, offset: String?,
+                   completion: @escaping ([Tweet]?, Error?) -> ()) {
     var params:[String:Any]!
-    
     if let offset = offset {
       params = ["max_id": offset]
     }
-    get("1.1/statuses/home_timeline.json", parameters: params, success: { (operation:AFHTTPRequestOperation, response: Any) in
+    var apiLink:String!
+    switch type {
+    case TimeLineType.homeTimeLine :
+      apiLink = "1.1/statuses/home_timeline.json"
+    case TimeLineType.mentionsTimeLine :
+      apiLink = "1.1/statuses/mentions_timeline.json"
+    }
+    
+    get(apiLink, parameters: params, success: { (operation:AFHTTPRequestOperation, response: Any) in
       guard let tweetDictionaries = response as? [[String: Any]] else {
         let error = "Failed to parse tweets" as! Error
         completion(nil, error)
@@ -196,9 +241,11 @@ class TwitterClient: BDBOAuth1RequestOperationManager {
   
   func logout() {
     requestSerializer.removeAccessToken()
-    UserDefaults.standard.removeObject(forKey: "loggedUser")
-    print("Have a good day \(TwitterClient.loggedInUser.name)")
-    TwitterClient.loggedInUser = nil
+    print("Have a good day \(TwitterClient.currentAccount.user.name)")
+    let accountIndex = TwitterClient.accounts.index(of: TwitterClient.currentAccount)
+    TwitterClient.accounts.remove(at: accountIndex!)
+    TwitterClient.shared?.saveAccounts()
+    
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
     let loginViewController = storyboard.instantiateViewController(withIdentifier: "loginViewController")
     let appDelegate = UIApplication.shared.delegate as! AppDelegate

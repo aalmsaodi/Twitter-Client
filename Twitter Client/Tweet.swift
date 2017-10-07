@@ -90,6 +90,7 @@ class Tweet {
         self.retweetCount += 1
         completion(nil)
       } else {
+        self.isRetweetedBtn = false
         completion(error)
       }
     })
@@ -102,6 +103,7 @@ class Tweet {
         self.retweetCount -= 1
         completion(nil)
       } else {
+        self.isRetweetedBtn = true
         completion(error)
       }
     })

@@ -8,6 +8,12 @@
 
 import UIKit
 
+enum IndexVC: Int {
+  case profileVC = 0
+  case homeLineVC = 1
+  case mentionsLineVC = 2
+}
+
 class MenuViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
   
   @IBOutlet weak var tableView: UITableView!
@@ -15,9 +21,10 @@ class MenuViewController: UIViewController, UITableViewDelegate, UITableViewData
   private var profileNavigationController: UIViewController!
   private var homeNavigationController: UIViewController!
   private var mentionsNavigationController: UIViewController!
+  private var accountSwitchingViewController: UIViewController!
   
   var viewControllers: [UIViewController] = []
-  let menuTitles = ["Profile", "Home Timeline", "Mentions Timeline"]
+  let menuTitles = ["Profile", "Home Timeline", "Mentions Timeline", "Accounts"]
 
   var burgerViewController: BurgerViewController!
   
@@ -31,12 +38,16 @@ class MenuViewController: UIViewController, UITableViewDelegate, UITableViewData
     profileNavigationController = storyboard.instantiateViewController(withIdentifier: "profileNavigationController") as! UINavigationController
     homeNavigationController = storyboard.instantiateViewController(withIdentifier: "homeNavigationController") as! UINavigationController
     mentionsNavigationController = storyboard.instantiateViewController(withIdentifier: "mentionsNavigationController") as! UINavigationController
+    accountSwitchingViewController = storyboard.instantiateViewController(withIdentifier: "accountSwitchingViewController") as! AccountSwitchingViewController
     
     viewControllers.append(profileNavigationController)
     viewControllers.append(homeNavigationController)
     viewControllers.append(mentionsNavigationController)
+    viewControllers.append(accountSwitchingViewController)
     
-    burgerViewController.contentViewController = homeNavigationController
+    let profileViewController = profileNavigationController.childViewControllers[0] as! ProfileViewController
+    profileViewController.user = TwitterClient.currentAccount.user
+    burgerViewController.contentViewController = profileNavigationController
     
     tableView.rowHeight = view.frame.height/CGFloat(menuTitles.count)
   }
@@ -55,11 +66,21 @@ class MenuViewController: UIViewController, UITableViewDelegate, UITableViewData
     switch indexPath.row {
     case Int(viewControllers.index(of: profileNavigationController)!):
       let profileViewController = profileNavigationController.childViewControllers[0] as! ProfileViewController
-      profileViewController.user = TwitterClient.loggedInUser
+      profileViewController.user = TwitterClient.currentAccount.user
+      
     case Int(viewControllers.index(of: homeNavigationController)!):
-      break
+      let homeTimeLineViewController = homeNavigationController.childViewControllers[0] as! TimeLineViewController
+      homeTimeLineViewController.timeLineType = TimeLineType.homeTimeLine
+      
     case Int(viewControllers.index(of: mentionsNavigationController)!):
-      break
+      let mentionsTimeLineViewController = mentionsNavigationController.childViewControllers[0] as! TimeLineViewController
+      mentionsTimeLineViewController.timeLineType = TimeLineType.mentionsTimeLine
+      
+    case Int(viewControllers.index(of: accountSwitchingViewController)!):
+      let appDelegate = UIApplication.shared.delegate as! AppDelegate
+      appDelegate.window?.rootViewController = accountSwitchingViewController
+      return
+      
     default:
       break
     }
