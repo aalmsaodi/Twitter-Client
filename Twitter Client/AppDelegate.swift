@@ -44,9 +44,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       
       TwitterClient.shared?.getCurrentAccount(completion: { (user: User?, error: Error?) in
         if let user = user {
-          TwitterClient.currentAccount.user = user
           TwitterClient.accounts.append(Account(user: user, accessToken: accessToken))
           TwitterClient.shared?.saveAccounts()
+          TwitterClient.currentAccount = (Account(user: user, accessToken: accessToken))
           
           let storyboard = UIStoryboard(name: "Main", bundle: nil)
           let burgerViewController = storyboard.instantiateViewController(withIdentifier: "burgerViewController")as! BurgerViewController

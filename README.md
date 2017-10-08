@@ -1,34 +1,35 @@
-# Twitter Client
+# Twitter Redux
 This is a light Twitter clinet iOS App. It uses Twitter OAuth 1.1 API to login, check timeline, tweet, retweet, favorite and more!
 
-Time spent: +40 hours spent in total
+Time spent: xx hours spent in total
 
 Completed features:
-* [x] Required: User can sign in using OAuth login flow
-* [x] Required: User can view last 20 tweets from their home timeline
-* [x] Required: The current signed in user will be persisted across restarts
-* [x] Required: In the home timeline, user can view tweet with the user profile picture, username, tweet text, and timestamp.
-* [x] Required: User can pull to refresh
-* [x] Required: User can compose a new tweet by tapping on a compose button.
-* [x] Required: User can tap on a tweet to view it, with controls to retweet, favorite, and reply.
+* [x] Required: (Hamburger menu) Dragging anywhere in the view should reveal the menu.
+* [x] Required: (Hamburger menu) The menu should include links to your profile, the home timeline, and the mentions view.
+* [x] Required: (Hamburger menu) The menu can look similar to the menu should in the assignment description.
+* [x] Required: (Profile page) Contains the user header view.
+* [x] Required: (Profile page) Contains a section with the users basic stats: # tweets, # following, # followers.
+* [x] Required: (Profile page) Shows the user timeline.
+* [x] Required: (Home Timeline ) Tapping on a user image should bring up that user's profile page.
 
-* [x] Optional: When composing, you should have a countdown in the upper right for the tweet limit.
-* [x] Optional: After creating a new tweet, a user should be able to view it in the timeline immediately without refetching the timeline from the network.
-* [x] Optional: Retweeting and favoriting should increment the retweet and favorite count.
-* [x] Optional: User should be able to unretweet and unfavorite and should decrement the retweet and favorite count.
-* [x] Optional: Replies should be prefixed with the username and the reply_id should be set when posting the tweet
-* [x] Optional: User can load more tweets once they reach the bottom of the feed using infinite loading similar to the actual Twitter client.
+* [x] Optional: (Profile page) Implement the paging view for the user description.
+* [////] Optional: (Profile page) As the paging view moves, increase the opacity of the background screen. 
+* [////] Optional: (Profile page) Pulling down the profile page should blur and resize the header image.
+* [////] Optional: (Account switching) Long press on navigation bar to bring up Account view with animation.
+* [x] Optional: (Account switching) Tap account to switch to.
+* [x] Optional: (Account switching) Include a plus button to Add an Account.
+* [x] Optional: (Account switching) Swipe to delete an account.
 
-* [x] Additional: Added search capablity to query for relevent tweets to the search term. When hitting cancel on search bar, home timeline will be resumed as normal.
-* [x] Additional: Blocking the user from writing more than 140 char on the Tweet Text View
-* [x] Additional: Using user-friendly UI feedback that conforms to the user the success/failure of actions
-* [x] Additional: Update favor and Retweet buttons in when returning to home view without refetching tweets
-* [x] Additional: Timestamp is displayed in formate of (#s, #m, #h, date, date+time) just like original Twitter
-* [x] Additional: Loading consumer key and secret codes from plist
+* [x] Additional: 
+* [x] Additional: 
+* [x] Additional: 
+* [x] Additional: 
+* [x] Additional: 
+* [x] Additional: 
 
 
 
 Walkthrough of Twitter Client:
-![Video Walkthrough](https://media.giphy.com/media/3ohhwukMaibGxJtbt6/giphy.gif)
+![Video Walkthrough]()
 
 GIF created with [LiceCap](http://www.cockos.com/licecap/).

@@ -25,8 +25,8 @@ class User: NSObject, NSCoding {
     name = user["name"].string!
     screenName = user["screen_name"].string!
     id = user["id_str"].string!
-    avatarImageUrl = user["profile_image_url_https"].string!
-    backgroundUrl = user["profile_background_image_url_https"].string
+    avatarImageUrl = (user["profile_image_url_https"].string!).replacingOccurrences(of: "_normal", with: "")
+    backgroundUrl = user["profile_banner_url"].string
     userDescription = user["description"].string!
     followingsCount = user["friends_count"].int!
     followersCount = user["followers_count"].int!

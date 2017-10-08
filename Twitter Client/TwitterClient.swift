@@ -35,6 +35,50 @@ class TwitterClient: BDBOAuth1RequestOperationManager {
     }
   }
   
+  func login() {
+    requestSerializer.removeAccessToken()
+    fetchRequestToken(withPath: "oauth/request_token", method: "GET", callbackURL: URL(string:"TwitterClient://oauth"), scope: nil, success: { (requestToken: BDBOAuth1Credential!) in
+      if let authURL = URL(string:"https://api.twitter.com/oauth/authorize?oauth_token=\(requestToken.token as String)") {
+        print ("Got request token")
+        UIApplication.shared.open(authURL, options: [:], completionHandler: nil)
+      }
+    }) { (error: Error?) in
+      print(error ?? "Failed to log in")
+    }
+  }
+  
+  func logout() {
+    requestSerializer.removeAccessToken()
+    print("Have a good day \(TwitterClient.currentAccount.user.name)")
+    let accountIndex = TwitterClient.accounts.index(of: TwitterClient.currentAccount)
+    TwitterClient.accounts.remove(at: accountIndex!)
+    TwitterClient.shared?.saveAccounts()
+    
+    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+    let loginViewController = storyboard.instantiateViewController(withIdentifier: "loginViewController")
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    appDelegate.window?.rootViewController = loginViewController
+  }
+  
+  func getCurrentAccount(completion: @escaping (User?, Error?) -> ()) {
+    get("1.1/account/verify_credentials.json", parameters: nil, success: { (operation: AFHTTPRequestOperation, response: Any) in
+      guard let userDictionary = response as? [String:Any] else {
+        completion(nil, "Unable to create user dictionary" as? Error)
+        return
+      }
+      completion(User(user: JSON(userDictionary)), nil)
+    }) { (operation: AFHTTPRequestOperation?, error: Error) in
+      completion(nil, error)
+    }
+  }
+  
+  func updateProfileBanner(id:String) {
+    let params = ["banner": id]
+    post("https://api.twitter.com/1.1/account/update_profile_banner.json", parameters: params, success: { (operation:AFHTTPRequestOperation, response: Any) in
+      print("uploading Banner Succeed")
+    })
+  }
+  
   func getUserTimeLine(screenName: String, offset: String?,
                        completion: @escaping ([Tweet]?, Error?) -> ()) {
     var params = ["screen_name": screenName]
@@ -213,43 +257,6 @@ class TwitterClient: BDBOAuth1RequestOperationManager {
     }) { (operation: AFHTTPRequestOperation?, error: Error) in
       completion(nil, error)
     }
-  }
-  
-  func getCurrentAccount(completion: @escaping (User?, Error?) -> ()) {
-    get("1.1/account/verify_credentials.json", parameters: nil, success: { (operation: AFHTTPRequestOperation, response: Any) in
-      guard let userDictionary = response as? [String:Any] else {
-        completion(nil, "Unable to create user dictionary" as? Error)
-        return
-      }
-      completion(User(user: JSON(userDictionary)), nil)
-    }) { (operation: AFHTTPRequestOperation?, error: Error) in
-      completion(nil, error)
-    }
-  }
-  
-  func login() {
-    requestSerializer.removeAccessToken()
-    fetchRequestToken(withPath: "oauth/request_token", method: "GET", callbackURL: URL(string:"TwitterClient://oauth"), scope: nil, success: { (requestToken: BDBOAuth1Credential!) in
-      if let authURL = URL(string:"https://api.twitter.com/oauth/authorize?oauth_token=\(requestToken.token as String)") {
-        print ("Got request token")
-        UIApplication.shared.open(authURL, options: [:], completionHandler: nil)
-      }
-    }) { (error: Error?) in
-      print(error ?? "Failed to log in")
-    }
-  }
-  
-  func logout() {
-    requestSerializer.removeAccessToken()
-    print("Have a good day \(TwitterClient.currentAccount.user.name)")
-    let accountIndex = TwitterClient.accounts.index(of: TwitterClient.currentAccount)
-    TwitterClient.accounts.remove(at: accountIndex!)
-    TwitterClient.shared?.saveAccounts()
-    
-    let storyboard = UIStoryboard(name: "Main", bundle: nil)
-    let loginViewController = storyboard.instantiateViewController(withIdentifier: "loginViewController")
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    appDelegate.window?.rootViewController = loginViewController
   }
   
 }
