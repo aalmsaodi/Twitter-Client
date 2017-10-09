@@ -28,10 +28,14 @@ class AccountSwitchingViewController: UIViewController, UITableViewDelegate, UIT
   }
   
   func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-    let viewAddBtn = UIButton(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 100))
-    viewAddBtn.backgroundColor = UIColor.gray
-    viewAddBtn.addTarget(self, action: #selector(addNewAccount), for: .touchUpInside)
-    return viewAddBtn
+    let addBtnView = UIButton(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 100))
+    let addImageView = UIImageView(frame: CGRect(x: (tableView.frame.width/2 - 35), y: (addBtnView.frame.height/2 - 35), width: 70, height: 70))
+    addBtnView.backgroundColor = UIColor.lightGray
+    addImageView.image = UIImage(named: "add")
+    addImageView.contentMode = .scaleAspectFill
+    addBtnView.addSubview(addImageView)
+    addBtnView.addTarget(self, action: #selector(addNewAccount), for: .touchUpInside)
+    return addBtnView
   }
   
   func addNewAccount() {

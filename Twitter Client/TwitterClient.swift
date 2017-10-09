@@ -28,7 +28,10 @@ class TwitterClient: BDBOAuth1RequestOperationManager {
     if let accountsData = UserDefaults.standard.object(forKey: "accounts") as? NSData {
       let accountsArray = NSKeyedUnarchiver.unarchiveObject(with: accountsData as Data) as? [Account]
       TwitterClient.accounts = accountsArray!
-      TwitterClient.currentAccount = accountsArray?[0]
+    }
+    
+    if TwitterClient.accounts.count != 0 {
+      TwitterClient.currentAccount = TwitterClient.accounts[0]
       return true
     } else {
       return false
@@ -72,11 +75,13 @@ class TwitterClient: BDBOAuth1RequestOperationManager {
     }
   }
   
-  func updateProfileBanner(id:String) {
-    let params = ["banner": id]
-    post("https://api.twitter.com/1.1/account/update_profile_banner.json", parameters: params, success: { (operation:AFHTTPRequestOperation, response: Any) in
+  func updateProfileImage(image: String) {
+    let params = ["image": image]
+    post("1.1/account/update_profile_image.json", parameters: params, success: { (operation:AFHTTPRequestOperation, response: Any) in
       print("uploading Banner Succeed")
-    })
+    }) { (operation: AFHTTPRequestOperation?, error:Error) in
+      print("failed to upload: \(error)")
+    }
   }
   
   func getUserTimeLine(screenName: String, offset: String?,

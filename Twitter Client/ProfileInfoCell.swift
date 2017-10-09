@@ -10,24 +10,27 @@ import UIKit
 
 class ProfileInfoCell: UITableViewCell {
   
-  @IBOutlet weak var avatarImage: UIImageView!
-  @IBOutlet weak var usernameLabel: UILabel!
-  @IBOutlet weak var descriptionLabel: UILabel!
-  @IBOutlet weak var screenNameLabel: UILabel!
-  @IBOutlet weak var tweetsCountLabel: UILabel!
-  @IBOutlet weak var followingsCountLabel: UILabel!
-  @IBOutlet weak var followersCountLabel: UILabel!
-  @IBOutlet weak var profileInfoView: UIView!
-  @IBOutlet weak var statesPage: UIView!
-  @IBOutlet weak var descriptionPage: UIView!
+  @IBOutlet weak private var avatarImageBtn: UIButton!
+  @IBOutlet weak private var usernameLabel: UILabel!
+  @IBOutlet weak private var descriptionLabel: UILabel!
+  @IBOutlet weak private var screenNameLabel: UILabel!
+  @IBOutlet weak private var tweetsCountLabel: UILabel!
+  @IBOutlet weak private var followingsCountLabel: UILabel!
+  @IBOutlet weak private var followersCountLabel: UILabel!
+  @IBOutlet weak private var statesPage: UIView!
+  @IBOutlet weak private var descriptionPage: UIView!
   
+  var isDescriptionCurrentPage:((Bool)->())?
+  var takePicForProfileAvatar:(()->())?
+
   var user:User! {
     didSet {
       if let url = URL(string: user.avatarImageUrl) {
-        avatarImage.setImageWith(url)
-        avatarImage.layer.cornerRadius = 5.0
-        avatarImage.layer.masksToBounds = true
+        avatarImageBtn.setImageFor(.normal, with: url)
+        avatarImageBtn.layer.cornerRadius = 5.0
+        avatarImageBtn.layer.masksToBounds = true
       }
+
       usernameLabel.text = user.name
       screenNameLabel.text = "@\(user.screenName)"
       descriptionLabel.text = user.userDescription
@@ -39,24 +42,30 @@ class ProfileInfoCell: UITableViewCell {
   
   var changingAvatarImageSizeBy: CGFloat? {
     didSet {
-      avatarImage.frame.size.height += changingAvatarImageSizeBy!
-      avatarImage.frame.size.width += changingAvatarImageSizeBy!
+      avatarImageBtn.frame.size.height += changingAvatarImageSizeBy!
+      avatarImageBtn.frame.size.width += changingAvatarImageSizeBy!
     }
   }
   
   override func awakeFromNib() {
     super.awakeFromNib()
-    
+
   }
   
   @IBAction func onProfilePageControl(_ sender: UIPageControl) {
-    if sender.currentPage == 0 {
+    if sender.currentPage == 0 { //states page
       descriptionPage.isHidden = true
       statesPage.isHidden = false
-    } else {
+      isDescriptionCurrentPage?(false)
+    } else { //description page
       descriptionPage.isHidden = false
       statesPage.isHidden = true
+      isDescriptionCurrentPage?(true)
     }
+  }
+  
+  @IBAction func onAvatarImageBtn(_ sender: Any) {
+    takePicForProfileAvatar?()
   }
   
 }

@@ -10,37 +10,32 @@ import UIKit
 
 class ProfileViewController: UIViewController, UIGestureRecognizerDelegate {
   
-  @IBOutlet weak private var tableView: UITableView!
+  @IBOutlet weak var tableView: UITableView!
   @IBOutlet weak var profileBannerImage: UIImageView!
   @IBOutlet weak var profileBannerView: UIView!
   @IBOutlet weak var headerHeightConstraint: NSLayoutConstraint!
   fileprivate var tweets:[Tweet]=[]
   fileprivate var isVerticalPan: Bool!
-
-  fileprivate let profileBannerImageHieght: CGFloat = 150
-  fileprivate let maxHeaderHeight: CGFloat = 130
-  fileprivate let minHeaderHeight: CGFloat = 40
+  
+  fileprivate let maxHeaderHeight: CGFloat = 120
+  fileprivate let minHeaderHeight: CGFloat = 28
   fileprivate var previousScrollOffset: CGFloat = 0
-
-  var user: User!
-  var passingTranslationValue: ((_ by: CGFloat) -> ())?
   
-  let blurEffect = UIBlurEffect(style: UIBlurEffectStyle.light)
-  var blurEffectView = UIVisualEffectView()
+  fileprivate var refreshControl:UIRefreshControl!
+  fileprivate var loadingMoreView:InfiniteScrollActivityView!
+  fileprivate var isMoreDataLoading:Bool!
   
-  func somethingWasTapped(_ sth: AnyObject){
-    print("Hey there")
-  }
+  fileprivate var avatarImage = UIImageView()
+  fileprivate var blurProfileBannerImage = UIImageView()
   
+  private var user: User!
+    
   override func viewDidLoad() {
     super.viewDidLoad()
-    
+    let tapGestureRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(launchAccountsViewController(_:)))
+    self.navigationController?.navigationBar.addGestureRecognizer(tapGestureRecognizer)
     self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
     self.navigationController?.navigationBar.shadowImage = UIImage()
-    self.navigationController?.navigationBar.isTranslucent = true
-    self.navigationController?.view.backgroundColor = .clear
-    
-    let tapGestureRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(somethingWasTapped(_:)))
     
     tableView.delegate = self
     tableView.dataSource = self
@@ -48,10 +43,28 @@ class ProfileViewController: UIViewController, UIGestureRecognizerDelegate {
     tableView.rowHeight = UITableViewAutomaticDimension
     automaticallyAdjustsScrollViewInsets = true
     
-    if let urlString = user.backgroundUrl, let url = URL(string: urlString) {
-      profileBannerImage.setImageWith(url)
-    } 
-
+    refreshControl = UIRefreshControl()
+    refreshControl.addTarget(self, action: #selector(pullRefreshControlAction(_:)), for: UIControlEvents.valueChanged)
+    tableView.insertSubview(refreshControl, at: 0)
+    loadingMoreView = InfiniteScrollActivityView()
+    loadingMoreView.isHidden = true
+    isMoreDataLoading = false
+    
+    if let urlString = user.backgroundUrl {
+      imageFromURL(urlString: urlString, completion: {image in
+        self.profileBannerImage.image = image
+        self.blurProfileBannerImage.frame = self.profileBannerImage.frame
+        self.blurProfileBannerImage.image = self.blurImage(image: image)
+      })
+    }
+    
+    if let url = URL(string: user.avatarImageUrl) {
+      avatarImage.setImageWith(url)
+      avatarImage.layer.cornerRadius = 5
+      avatarImage.layer.masksToBounds = true
+      avatarImage.frame.size = CGSize(width: 40, height: 40)
+    }
+    
     TwitterClient.shared?.getUserTimeLine(screenName: user.screenName, offset: nil) { (tweets, error) in
       if let tweets = tweets {
         self.tweets = tweets
@@ -61,78 +74,70 @@ class ProfileViewController: UIViewController, UIGestureRecognizerDelegate {
       }
     }
   }
-  
+
   override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
-    headerHeightConstraint.constant = maxHeaderHeight
+    self.navigationController?.navigationBar.isTranslucent = true
+    self.navigationController?.view.backgroundColor = .clear
   }
   
+  override func viewWillDisappear(_ animated: Bool) {
+    super.viewWillDisappear(animated)
+    self.navigationController?.navigationBar.isTranslucent = false
+    self.navigationController?.view.backgroundColor = UIColor(displayP3Red: 0x66/0xFF, green: 0x76/0xFF, blue: 0x7F/0xFF, alpha: 1)
+  }
+  
+  // MARK: - Annimation and gesture Logic
   func scrollViewDidScroll(_ scrollView: UIScrollView) {
-    let topBorder: CGFloat = 0
-    let bottomBorder: CGFloat = scrollView.contentSize.height - scrollView.frame.size.height;
-    let scrollDiff = scrollView.contentOffset.y - self.previousScrollOffset
-    let isScrollingDown = scrollDiff > 0 && scrollView.contentOffset.y > topBorder
-    let isScrollingUp = scrollDiff < 0 && scrollView.contentOffset.y < bottomBorder
-//    let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as! ProfileInfoCell
-//    cell.changingAvatarImageSizeBy = scrollView.contentOffset.y
+    if let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? ProfileInfoCell {
+//      cell.changingAvatarImageSizeBy = scrollView.contentOffset.y
+    }
+
+    if scrollView.contentOffset.y > minHeaderHeight {
+      self.headerHeightConstraint.constant = 0
+      UIView.animate(withDuration: 0.3, animations: {
+        self.navigationController?.navigationBar.setBackgroundImage(self.blurProfileBannerImage.image, for: .default)
+        self.navigationController?.navigationBar.isTranslucent = false
+        self.navigationItem.title = self.user.name
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: self.avatarImage)
+      })
+      
+    } else {
+      headerHeightConstraint.constant = maxHeaderHeight - scrollView.contentOffset.y
+      self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
+      self.navigationController?.navigationBar.isTranslucent = true
+      navigationItem.leftBarButtonItem = nil
+      self.navigationItem.title = ""
+    }
     
-    if canAnimateHeader(scrollView) {
-      var newHeight = headerHeightConstraint.constant
-      if isScrollingDown {
-        newHeight = max(minHeaderHeight, headerHeightConstraint.constant - abs(scrollDiff))
-      } else if isScrollingUp {
-        newHeight = min(maxHeaderHeight, headerHeightConstraint.constant + abs(scrollDiff))
+    if (!isMoreDataLoading) {
+      let scrollViewContentHeight = tableView.contentSize.height
+      let scrollOffsetThreshold = scrollViewContentHeight - tableView.bounds.size.height
+      
+      if(scrollView.contentOffset.y > scrollOffsetThreshold && tableView.isDragging) {
+        isMoreDataLoading = true
+        loadingMoreView.startAnimating()
+        getMoreResults()
       }
-    if newHeight != self.headerHeightConstraint.constant {
-      self.headerHeightConstraint.constant = newHeight
-      self.setScrollPosition(position: self.previousScrollOffset)
     }
-      previousScrollOffset = scrollView.contentOffset.y
-    }
-    
-//    self.view.bringSubview(toFront: profileBannerView)
   }
-  
-  func setScrollPosition(position: CGFloat) {
-    self.tableView.contentOffset = CGPoint(x: tableView.contentOffset.x, y: position)
-  }
-  
-  func canAnimateHeader(_ scrollView: UIScrollView) -> Bool {
-    let scrollViewMaxHeight = scrollView.frame.height + self.headerHeightConstraint.constant - minHeaderHeight
-    return scrollView.contentSize.height > scrollViewMaxHeight
-  }
-  
-//  func setupBlur() {
-//    UIView.animate(withDuration: 1.0) {
-//      self.blurEffectView = UIVisualEffectView(effect: self.blurEffect)
-//      self.blurEffectView.frame = self.backgroundImage.frame
-//      self.backgroundImage.addSubview(self.blurEffectView)
-//      self.blurEffectView = self.backgroundImage.subviews[0] as! UIVisualEffectView
-//      self.blurEffectView.layer.speed = 0
-//    }
-//  }
-//  
-//  func addjustBlur(blurIntensity: CGFloat) {
-//    self.blurEffectView.layer.timeOffset = CFTimeInterval(blurIntensity)
-//  }
-  
   
   func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
     guard let panRecognizer = gestureRecognizer as? UIPanGestureRecognizer else {return false}
-    
     let velocity = panRecognizer.velocity(in: self.view)
     isVerticalPan = abs(velocity.x) < abs(velocity.y)
-    
     return true
   }
   
-  func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-    return true
+  func launchAccountsViewController(_ sth: AnyObject){
+    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    let accountSwitchingViewController = storyboard.instantiateViewController(withIdentifier: "accountSwitchingViewController") as! AccountSwitchingViewController
+    appDelegate.window?.rootViewController = accountSwitchingViewController
   }
-  
 }
 
-
+// MARK: - TableView delegates
 extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
   func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
     return tweets.count + 1
@@ -143,8 +148,16 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
     case 0:
       let cell = tableView.dequeueReusableCell(withIdentifier: "profileInfoCell", for: indexPath) as! ProfileInfoCell
       cell.user = user
-      cell.superview?.bringSubview(toFront: cell.avatarImage)
-      cell.contentView.superview?.clipsToBounds = false
+      cell.isDescriptionCurrentPage = {[unowned self] isDescriptionPage in
+        if isDescriptionPage {
+          self.profileBannerImage.alpha = 0.5
+        } else {
+          self.profileBannerImage.alpha = 1
+        }
+      }
+      cell.takePicForProfileAvatar = {
+        self.performSegue(withIdentifier: "fromProfileViewControllerToTakingNewPic", sender: self)
+      }
       return cell
     default:
       let cell = tableView.dequeueReusableCell(withIdentifier: "fullTweetCell", for: indexPath) as! FullTweetCell
@@ -153,5 +166,82 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
       return cell
     }
   }
+  
+  override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+    if segue.identifier == "fromProfileViewControllerToTakingNewPic" {
+      let takingNewPhotoViewController = segue.destination as! TakingNewPhotoViewController
+      takingNewPhotoViewController.avatarUrl = user.avatarImageUrl
+    }
+  }
+}
 
+// MARK: - Refresh and Loadmore scrolling
+extension ProfileViewController: UIScrollViewDelegate {
+  func pullRefreshControlAction(_ refreshControl: UIRefreshControl) {
+    TwitterClient.shared?.getUserTimeLine(screenName: user.screenName, offset: nil) { (tweets, error) in
+      if let tweets = tweets {
+        self.tweets = tweets
+        self.tableView.reloadData()
+        self.refreshControl.endRefreshing()
+      } else if let error = error {
+        print("Error getting home timeline: " + error.localizedDescription)
+      }
+    }
+  }
+  
+  fileprivate func getMoreResults() {
+    TwitterClient.shared?.getUserTimeLine(screenName: user.screenName, offset: tweets.last?.id) { (tweets, error) in
+      if let tweets = tweets {
+        self.tweets.append(contentsOf: tweets.dropFirst()) //drop first repeated tweet
+        self.tableView.reloadData()
+        self.loadingMoreView.isHidden = true
+        self.isMoreDataLoading = false
+      } else if let error = error {
+        print("Error getting home timeline: " + error.localizedDescription)
+      }
+    }
+  }
+}
+
+// MARK: - Helper functions
+extension ProfileViewController {
+  func blurImage(image:UIImage) -> UIImage? {
+    let context = CIContext(options: nil)
+    let inputImage = CIImage(image: image)
+    let originalOrientation = image.imageOrientation
+    let originalScale = image.scale
+    
+    let filter = CIFilter(name: "CIGaussianBlur")
+    filter?.setValue(inputImage, forKey: kCIInputImageKey)
+    filter?.setValue(10.0, forKey: kCIInputRadiusKey)
+    let outputImage = filter?.outputImage
+    
+    var cgImage:CGImage?
+    
+    if let asd = outputImage {
+      cgImage = context.createCGImage(asd, from: (inputImage?.extent)!)
+    }
+    
+    if let cgImageA = cgImage {
+      return UIImage(cgImage: cgImageA, scale: originalScale, orientation: originalOrientation)
+    }
+    
+    return nil
+  }
+  
+  public func imageFromURL(urlString: String, completion: @escaping (UIImage)->()) {
+    URLSession.shared.dataTask(with: NSURL(string: urlString)! as URL, completionHandler: { (data, response, error) -> Void in
+      
+      if error != nil {
+        print(error)
+        return
+      }
+      DispatchQueue.main.async(execute: { () -> Void in
+        if let image = UIImage(data: data!) {
+          completion(image)
+        }
+      })
+      
+    }).resume()
+  }
 }

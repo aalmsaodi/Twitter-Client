@@ -100,7 +100,6 @@ class FullTweetCell: UITableViewCell {
     }
   }
 
-  
   override func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
     return true
   }

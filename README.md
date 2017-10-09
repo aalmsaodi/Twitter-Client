@@ -13,15 +13,15 @@ Completed features:
 * [x] Required: (Home Timeline ) Tapping on a user image should bring up that user's profile page.
 
 * [x] Optional: (Profile page) Implement the paging view for the user description.
-* [////] Optional: (Profile page) As the paging view moves, increase the opacity of the background screen. 
-* [////] Optional: (Profile page) Pulling down the profile page should blur and resize the header image.
+* [x] Optional: (Profile page) As the paging view moves, increase the opacity of the background screen. 
+* [x] Optional: (Profile page) Pulling down the profile page should blur and resize the header image.
 * [////] Optional: (Account switching) Long press on navigation bar to bring up Account view with animation.
 * [x] Optional: (Account switching) Tap account to switch to.
 * [x] Optional: (Account switching) Include a plus button to Add an Account.
 * [x] Optional: (Account switching) Swipe to delete an account.
 
-* [x] Additional: 
-* [x] Additional: 
+* [x] Additional: Allow adding multiple accounts, and save all of their information 
+* [x] Additional: Allow taking a pic from Camera/library, and uploading as a profile pic [Failed: Twitter API doesn't allow it]
 * [x] Additional: 
 * [x] Additional: 
 * [x] Additional: 

@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		2B91FDD228DD8B63613C214D /* Pods_Twitter_Client.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DBDFFE3241B45CB74AD2799B /* Pods_Twitter_Client.framework */; };
 		CE0595A31F896EE600DEA416 /* Account.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0595A21F896EE600DEA416 /* Account.swift */; };
+		CE0595A51F8A768400DEA416 /* TakingNewPhotoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0595A41F8A768400DEA416 /* TakingNewPhotoViewController.swift */; };
+		CE0595A71F8A7E1600DEA416 /* UIImage+Resize.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0595A61F8A7E1600DEA416 /* UIImage+Resize.swift */; };
 		CE232EF71F7E0CBE00F33940 /* InfiniteScrollActivityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE232EF61F7E0CBE00F33940 /* InfiniteScrollActivityView.swift */; };
 		CE232EF91F7E894900F33940 /* TwitterClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE232EF81F7E894900F33940 /* TwitterClient.swift */; };
 		CE2665871F887569006F365B /* AccountSwitchingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2665861F887569006F365B /* AccountSwitchingViewController.swift */; };
@@ -20,7 +22,6 @@
 		CE4111D51F842EB9008128B1 /* MenueButtonCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE4111D41F842EB9008128B1 /* MenueButtonCell.swift */; };
 		CE4111D71F84329F008128B1 /* BurgerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE4111D61F84329F008128B1 /* BurgerViewController.swift */; };
 		CE4111D91F843FD5008128B1 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE4111D81F843FD5008128B1 /* ProfileViewController.swift */; };
-		CE4111DB1F843FEF008128B1 /* MentionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE4111DA1F843FEF008128B1 /* MentionsViewController.swift */; };
 		CE7C7CBD1F7D44F500F4C479 /* String+Subscript.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7C7CBC1F7D44F500F4C479 /* String+Subscript.swift */; };
 		CE7C7CBF1F7D5A7100F4C479 /* TweetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7C7CBE1F7D5A7100F4C479 /* TweetViewController.swift */; };
 		CE7C7CC11F7D74AB00F4C479 /* PostTweetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7C7CC01F7D74AB00F4C479 /* PostTweetViewController.swift */; };
@@ -37,6 +38,8 @@
 /* Begin PBXFileReference section */
 		7244B5D31D7AA0E9934D7BCC /* Pods-Twitter Client.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Twitter Client.release.xcconfig"; path = "Pods/Target Support Files/Pods-Twitter Client/Pods-Twitter Client.release.xcconfig"; sourceTree = "<group>"; };
 		CE0595A21F896EE600DEA416 /* Account.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Account.swift; sourceTree = "<group>"; };
+		CE0595A41F8A768400DEA416 /* TakingNewPhotoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TakingNewPhotoViewController.swift; sourceTree = "<group>"; };
+		CE0595A61F8A7E1600DEA416 /* UIImage+Resize.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIImage+Resize.swift"; sourceTree = "<group>"; };
 		CE232EF61F7E0CBE00F33940 /* InfiniteScrollActivityView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InfiniteScrollActivityView.swift; sourceTree = "<group>"; };
 		CE232EF81F7E894900F33940 /* TwitterClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TwitterClient.swift; sourceTree = "<group>"; };
 		CE2665861F887569006F365B /* AccountSwitchingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountSwitchingViewController.swift; sourceTree = "<group>"; };
@@ -48,7 +51,6 @@
 		CE4111D41F842EB9008128B1 /* MenueButtonCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenueButtonCell.swift; sourceTree = "<group>"; };
 		CE4111D61F84329F008128B1 /* BurgerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BurgerViewController.swift; sourceTree = "<group>"; };
 		CE4111D81F843FD5008128B1 /* ProfileViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
-		CE4111DA1F843FEF008128B1 /* MentionsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MentionsViewController.swift; sourceTree = "<group>"; };
 		CE7C7CBC1F7D44F500F4C479 /* String+Subscript.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+Subscript.swift"; sourceTree = "<group>"; };
 		CE7C7CBE1F7D5A7100F4C479 /* TweetViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TweetViewController.swift; sourceTree = "<group>"; };
 		CE7C7CC01F7D74AB00F4C479 /* PostTweetViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PostTweetViewController.swift; sourceTree = "<group>"; };
@@ -125,10 +127,10 @@
 				CE4111D21F842E59008128B1 /* MenuViewController.swift */,
 				CED2D1201F7BFCB400183972 /* TimeLineViewController.swift */,
 				CE4111D81F843FD5008128B1 /* ProfileViewController.swift */,
-				CE4111DA1F843FEF008128B1 /* MentionsViewController.swift */,
 				CE7C7CBE1F7D5A7100F4C479 /* TweetViewController.swift */,
 				CE7C7CC01F7D74AB00F4C479 /* PostTweetViewController.swift */,
 				CE2665861F887569006F365B /* AccountSwitchingViewController.swift */,
+				CE0595A41F8A768400DEA416 /* TakingNewPhotoViewController.swift */,
 			);
 			name = "View Controllers";
 			sourceTree = "<group>";
@@ -172,6 +174,7 @@
 			isa = PBXGroup;
 			children = (
 				CE7C7CBC1F7D44F500F4C479 /* String+Subscript.swift */,
+				CE0595A61F8A7E1600DEA416 /* UIImage+Resize.swift */,
 			);
 			name = Exensions;
 			sourceTree = "<group>";
@@ -314,7 +317,6 @@
 				CE232EF71F7E0CBE00F33940 /* InfiniteScrollActivityView.swift in Sources */,
 				CE3D51F91F7B1593009B64B1 /* User.swift in Sources */,
 				CED2D1211F7BFCB400183972 /* TimeLineViewController.swift in Sources */,
-				CE4111DB1F843FEF008128B1 /* MentionsViewController.swift in Sources */,
 				CE2665871F887569006F365B /* AccountSwitchingViewController.swift in Sources */,
 				CE0595A31F896EE600DEA416 /* Account.swift in Sources */,
 				CE4111D71F84329F008128B1 /* BurgerViewController.swift in Sources */,
@@ -326,9 +328,11 @@
 				CE7C7CBF1F7D5A7100F4C479 /* TweetViewController.swift in Sources */,
 				CE2665891F8877BE006F365B /* AccountCell.swift in Sources */,
 				CE3D51FD1F7B4819009B64B1 /* FullTweetCell.swift in Sources */,
+				CE0595A71F8A7E1600DEA416 /* UIImage+Resize.swift in Sources */,
 				CE4111D91F843FD5008128B1 /* ProfileViewController.swift in Sources */,
 				CE7C7CBD1F7D44F500F4C479 /* String+Subscript.swift in Sources */,
 				CE232EF91F7E894900F33940 /* TwitterClient.swift in Sources */,
+				CE0595A51F8A768400DEA416 /* TakingNewPhotoViewController.swift in Sources */,
 				CE7C7CC11F7D74AB00F4C479 /* PostTweetViewController.swift in Sources */,
 				CEFC5F291F7AA9430046D5D4 /* AppDelegate.swift in Sources */,
 			);

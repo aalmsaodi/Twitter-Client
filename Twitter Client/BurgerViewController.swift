@@ -52,10 +52,6 @@ class BurgerViewController: UIViewController, UIGestureRecognizerDelegate {
   @IBAction func onPanGesture(_ sender: UIPanGestureRecognizer) {
     let translation = sender.translation(in: view).x
     let velocity = sender.velocity(in: view).x
-//    let blurEffect = UIBlurEffect(style: UIBlurEffectStyle.extraLight)
-//    let blurEffectView = UIVisualEffectView(effect: blurEffect)
-//    blurEffectView.frame = contentView.bounds
-//    blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
     
     if isHorizentalPan {
       if sender.state == UIGestureRecognizerState.began {
@@ -68,8 +64,7 @@ class BurgerViewController: UIViewController, UIGestureRecognizerDelegate {
         UIView.animate(withDuration: 0.3, animations: {
           if abs(self.leftMarginConstraint.constant - self.originalLeftMargin) > 50 {
             if velocity > 0 { //finish Auto-openning the menu
-              self.leftMarginConstraint.constant = self.view.frame.size.width/2
-//              self.contentView.addSubview(blurEffectView)
+              self.leftMarginConstraint.constant = 2*self.view.frame.size.width/3
             } else {            //finish Auto-closing the menu
               self.leftMarginConstraint.constant = 0
               for subview in self.contentView.subviews {
@@ -83,7 +78,7 @@ class BurgerViewController: UIViewController, UIGestureRecognizerDelegate {
           else if velocity > 0  { //failed to open menue
             self.leftMarginConstraint.constant = 0
           } else if velocity < 0 { //faild to close the menu
-            self.leftMarginConstraint.constant = self.view.frame.size.width/2
+            self.leftMarginConstraint.constant = 2*self.view.frame.size.width/3
           }
         })
       }

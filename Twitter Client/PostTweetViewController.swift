@@ -32,16 +32,20 @@ class PostTweetViewController: UIViewController, UITextViewDelegate {
     }
     userNameLabel.text = TwitterClient.currentAccount.user.name
     screenNameLabel.text = "@\(TwitterClient.currentAccount.user.screenName)"
-    navigationController?.navigationBar.backgroundColor = UIColor.lightGray
     
     if let navigationBar = navigationController?.navigationBar {
       counterLabel = UILabel()
       let frame = CGRect(x: 4*navigationBar.frame.width/6, y: 0, width: 50, height: navigationBar.frame.height)
       counterLabel = UILabel(frame: frame)
-      counterLabel.textColor = UIColor.white
+      counterLabel.textColor = UIColor.lightGray
       navigationBar.addSubview(counterLabel)
       counterLabel.text = String(TWEETLENGTHLIMIT)
+      navigationBar.tintColor = .gray
     }
+  }
+  
+  override func viewWillDisappear(_ animated: Bool) {
+    navigationController?.navigationBar.tintColor = UIColor.gray
   }
   
   @IBAction func onCancelBtn(_ sender: Any) {

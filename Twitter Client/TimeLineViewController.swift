@@ -16,21 +16,24 @@ enum TimeLineType : String {
 class TimeLineViewController: UIViewController {
   
   @IBOutlet weak fileprivate var tableView: UITableView!
+  @IBOutlet weak private var searchBtnToggle: UIButton!
+  @IBOutlet weak private var searchBtnConstraintY: NSLayoutConstraint!
+  @IBOutlet weak private var searchBtnConstraintX: NSLayoutConstraint!
+  
   fileprivate var tweets:[Tweet] = []
   fileprivate var refreshControl:UIRefreshControl!
   fileprivate var loadingMoreView:InfiniteScrollActivityView!
   fileprivate var isMoreDataLoading:Bool!
   fileprivate var searchBar:UISearchBar!
+  fileprivate var titleBar:UIView!
+  fileprivate var originalSearchBtnConstraintY: CGFloat!
+  fileprivate var originalSearchBtnConstraintX: CGFloat!
   
   public var timeLineType:TimeLineType!
   
-  func somethingWasTapped(_ sth: AnyObject){
-    print("Hey there")
-  }
-  
   override func viewDidLoad() {
     super.viewDidLoad()
-    let tapGestureRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(somethingWasTapped(_:)))
+    let tapGestureRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(launchAccountsViewController(_:)))
     self.navigationController?.navigationBar.addGestureRecognizer(tapGestureRecognizer)
     
     super.viewDidLoad()
@@ -49,7 +52,8 @@ class TimeLineViewController: UIViewController {
     searchBar = UISearchBar()
     searchBar.delegate = self
     searchBar.sizeToFit()
-    navigationItem.titleView = searchBar
+    searchBar.isHidden = true
+    titleBar = navigationItem.titleView
     
     TwitterClient.shared?.getTimeLine(type: timeLineType, offset: nil) { (tweets, error) in
       if let tweets = tweets {
@@ -61,9 +65,44 @@ class TimeLineViewController: UIViewController {
     }
   }
   
+  @IBAction func onSearchBtnToggle(_ sender: Any) {
+    if searchBar.isHidden {
+      navigationItem.titleView = searchBar
+      searchBtnToggle.alpha = 0.4
+      searchBar.becomeFirstResponder()
+      searchBtnConstraintY.constant = view.frame.height/2
+    } else {
+      searchBtnToggle.alpha = 0.7
+      navigationItem.titleView = titleBar
+      searchBar.resignFirstResponder()
+      searchBar.text = nil
+      searchBtnConstraintY.constant = 30
+    }
+    searchBar.isHidden = !searchBar.isHidden
+  }
+  
+  
+  @IBAction func onSearchBtnPanGesture(_ sender: UIPanGestureRecognizer) {
+    let translation = sender.translation(in: view)
+    if sender.state == .began {
+      originalSearchBtnConstraintY = searchBtnConstraintY.constant
+      originalSearchBtnConstraintX = searchBtnConstraintX.constant
+    } else if sender.state == UIGestureRecognizerState.changed {
+      searchBtnConstraintY.constant = originalSearchBtnConstraintY - translation.y
+      searchBtnConstraintX.constant = originalSearchBtnConstraintX - translation.x
+    }
+  }
+  
   @IBAction func onSignOut(_ sender: Any) {
     TwitterClient.shared?.logout()
     navigationController?.popViewController(animated: true)
+  }
+  
+  func launchAccountsViewController(_ sth: AnyObject){
+    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    let accountSwitchingViewController = storyboard.instantiateViewController(withIdentifier: "accountSwitchingViewController") as! AccountSwitchingViewController
+    appDelegate.window?.rootViewController = accountSwitchingViewController
   }
 }
 
@@ -209,10 +248,6 @@ extension TimeLineViewController: UIScrollViewDelegate {
 
 
 extension TimeLineViewController: UISearchBarDelegate {
-  func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
-    searchBar.showsCancelButton = true
-  }
-  
   func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
     searchBar.resignFirstResponder()
     TwitterClient.shared?.searchTweets(offset: nil, term: searchBar.text!) { (tweets, error) in
@@ -225,24 +260,9 @@ extension TimeLineViewController: UISearchBarDelegate {
     }
   }
   
-  func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-    searchBar.showsCancelButton = false
-    searchBar.text = ""
-    searchBar.resignFirstResponder()
-    TwitterClient.shared?.getTimeLine(type: timeLineType, offset: nil) { (tweets, error) in
-      if let tweets = tweets {
-        self.tweets = tweets
-        self.tableView.reloadData()
-      } else if let error = error {
-        print("Error getting home timeline: " + error.localizedDescription)
-      }
-    }
-  }
-  
   func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
     searchBar.resignFirstResponder()
   }
-  
 }
 
 
