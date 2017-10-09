@@ -27,10 +27,10 @@
                                 <rect key="frame" x="16" y="167" width="343" height="333.5"/>
                                 <subviews>
                                     <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="TwitterLogoBlue" translatesAutoresizingMaskIntoConstraints="NO" id="wwA-6P-qmU">
-                                        <rect key="frame" x="57.5" y="20" width="228.5" height="200"/>
+                                        <rect key="frame" x="57.5" y="20" width="228.5" height="250"/>
                                     </imageView>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3DS-aW-lNC">
-                                        <rect key="frame" x="94.5" y="240" width="154" height="35"/>
+                                        <rect key="frame" x="94.5" y="290" width="154" height="35"/>
                                         <color key="backgroundColor" red="0.1803921568627451" green="0.24313725490196078" blue="0.26666666666666666" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="35" id="GFy-b7-M9T"/>
@@ -285,7 +285,6 @@
         <!--Profile View Controller-->
         <scene sceneID="fFk-k1-rya">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="G57-PB-M8s" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <viewController storyboardIdentifier="profileViewController" id="2Je-f6-qqG" customClass="ProfileViewController" customModule="Twitter_Client" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="c9s-VD-vF1"/>
@@ -642,11 +641,11 @@
                     <connections>
                         <outlet property="headerHeightConstraint" destination="zcE-Ar-J9p" id="9df-GX-WQw"/>
                         <outlet property="profileBannerImage" destination="LdN-6Q-v4o" id="CMN-S5-mKb"/>
-                        <outlet property="profileBannerView" destination="3ZR-V7-4e8" id="tJk-4t-YaH"/>
                         <outlet property="tableView" destination="qR3-9v-nSF" id="iSW-SM-Xfl"/>
                         <segue destination="Wh5-Sb-NHY" kind="presentation" identifier="fromProfileViewControllerToTakingNewPic" id="mCo-2B-M7O"/>
                     </connections>
                 </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="G57-PB-M8s" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="3177" y="-1347"/>
         </scene>
@@ -1042,7 +1041,7 @@
             <objects>
                 <navigationController storyboardIdentifier="homeNavigationController" automaticallyAdjustsScrollViewInsets="NO" id="VKh-BY-Hf0" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" translucent="NO" id="8JP-Vg-cNE">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" translucent="NO" id="8JP-Vg-cNE">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <gestureRecognizers/>
@@ -1267,10 +1266,9 @@
         <!--Navigation Controller-->
         <scene sceneID="26F-Yr-z5F">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="1Se-tx-kU7" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <navigationController storyboardIdentifier="profileNavigationController" automaticallyAdjustsScrollViewInsets="NO" id="92n-Or-Mwy" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="6SL-mL-VFT">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="6SL-mL-VFT">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <gestureRecognizers/>
@@ -1285,6 +1283,7 @@
                         <segue destination="2Je-f6-qqG" kind="relationship" relationship="rootViewController" id="lCh-cW-zcZ"/>
                     </connections>
                 </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="1Se-tx-kU7" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1585" y="-1347"/>
         </scene>
@@ -1506,6 +1505,7 @@
                     <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" translucent="NO" id="eBw-pD-nMD">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
+                        <color key="tintColor" red="0.18039215689999999" green="0.24313725489999999" blue="0.2666666667" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <color key="barTintColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                         <textAttributes key="titleTextAttributes">
                             <color key="textColor" red="0.1803921568627451" green="0.24313725490196078" blue="0.26666666666666666" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -1522,7 +1522,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="TwitterLogoBlue" width="200" height="200"/>
+        <image name="TwitterLogoBlue" width="250" height="250"/>
         <image name="background" width="960" height="540"/>
         <image name="close-icon" width="28" height="28"/>
         <image name="edit-icon" width="28" height="28"/>
@@ -1535,7 +1535,7 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="HsB-gp-ssf"/>
-        <segue reference="Rid-nh-hS0"/>
+        <segue reference="9jc-pt-EKG"/>
         <segue reference="lCh-cW-zcZ"/>
     </inferredMetricsTieBreakers>
 </document>

@@ -20,14 +20,14 @@ class TimeLineViewController: UIViewController {
   @IBOutlet weak private var searchBtnConstraintY: NSLayoutConstraint!
   @IBOutlet weak private var searchBtnConstraintX: NSLayoutConstraint!
   
+  private var titleBar:UIView!
+  private var originalSearchBtnConstraintY: CGFloat!
+  private var originalSearchBtnConstraintX: CGFloat!
   fileprivate var tweets:[Tweet] = []
   fileprivate var refreshControl:UIRefreshControl!
   fileprivate var loadingMoreView:InfiniteScrollActivityView!
   fileprivate var isMoreDataLoading:Bool!
   fileprivate var searchBar:UISearchBar!
-  fileprivate var titleBar:UIView!
-  fileprivate var originalSearchBtnConstraintY: CGFloat!
-  fileprivate var originalSearchBtnConstraintX: CGFloat!
   
   public var timeLineType:TimeLineType!
   
@@ -65,7 +65,7 @@ class TimeLineViewController: UIViewController {
     }
   }
   
-  @IBAction func onSearchBtnToggle(_ sender: Any) {
+  @IBAction private func onSearchBtnToggle(_ sender: Any) {
     if searchBar.isHidden {
       navigationItem.titleView = searchBar
       searchBtnToggle.alpha = 0.4
@@ -82,7 +82,7 @@ class TimeLineViewController: UIViewController {
   }
   
   
-  @IBAction func onSearchBtnPanGesture(_ sender: UIPanGestureRecognizer) {
+  @IBAction private func onSearchBtnPanGesture(_ sender: UIPanGestureRecognizer) {
     let translation = sender.translation(in: view)
     if sender.state == .began {
       originalSearchBtnConstraintY = searchBtnConstraintY.constant
@@ -93,12 +93,12 @@ class TimeLineViewController: UIViewController {
     }
   }
   
-  @IBAction func onSignOut(_ sender: Any) {
+  @IBAction private func onSignOut(_ sender: Any) {
     TwitterClient.shared?.logout()
     navigationController?.popViewController(animated: true)
   }
   
-  func launchAccountsViewController(_ sth: AnyObject){
+  @objc private func launchAccountsViewController(_ sth: AnyObject){
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     let accountSwitchingViewController = storyboard.instantiateViewController(withIdentifier: "accountSwitchingViewController") as! AccountSwitchingViewController

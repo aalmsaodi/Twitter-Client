@@ -10,25 +10,21 @@ import UIKit
 
 class ProfileViewController: UIViewController, UIGestureRecognizerDelegate {
   
-  @IBOutlet weak var tableView: UITableView!
-  @IBOutlet weak var profileBannerImage: UIImageView!
-  @IBOutlet weak var profileBannerView: UIView!
-  @IBOutlet weak var headerHeightConstraint: NSLayoutConstraint!
-  fileprivate var tweets:[Tweet]=[]
-  fileprivate var isVerticalPan: Bool!
+  @IBOutlet weak fileprivate var tableView: UITableView!
+  @IBOutlet weak fileprivate var profileBannerImage: UIImageView!
+  @IBOutlet weak private var headerHeightConstraint: NSLayoutConstraint!
   
-  fileprivate let maxHeaderHeight: CGFloat = 120
-  fileprivate let minHeaderHeight: CGFloat = 28
-  fileprivate var previousScrollOffset: CGFloat = 0
-  
+  private var isVerticalPan: Bool!
+  private let navigationBarAppearanceTrigger: CGFloat = 120
+  private let minHeaderHeight: CGFloat = 28
   fileprivate var refreshControl:UIRefreshControl!
   fileprivate var loadingMoreView:InfiniteScrollActivityView!
   fileprivate var isMoreDataLoading:Bool!
-  
   fileprivate var avatarImage = UIImageView()
   fileprivate var blurProfileBannerImage = UIImageView()
+  fileprivate var tweets:[Tweet]=[]
   
-  private var user: User!
+  var user: User!
     
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -90,9 +86,9 @@ class ProfileViewController: UIViewController, UIGestureRecognizerDelegate {
   // MARK: - Annimation and gesture Logic
   func scrollViewDidScroll(_ scrollView: UIScrollView) {
     if let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? ProfileInfoCell {
-//      cell.changingAvatarImageSizeBy = scrollView.contentOffset.y
+      cell.changingAvatarImageSizeBy = headerHeightConstraint.constant
     }
-
+    
     if scrollView.contentOffset.y > minHeaderHeight {
       self.headerHeightConstraint.constant = 0
       UIView.animate(withDuration: 0.3, animations: {
@@ -101,9 +97,8 @@ class ProfileViewController: UIViewController, UIGestureRecognizerDelegate {
         self.navigationItem.title = self.user.name
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: self.avatarImage)
       })
-      
     } else {
-      headerHeightConstraint.constant = maxHeaderHeight - scrollView.contentOffset.y
+      headerHeightConstraint.constant = navigationBarAppearanceTrigger - scrollView.contentOffset.y
       self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
       self.navigationController?.navigationBar.isTranslucent = true
       navigationItem.leftBarButtonItem = nil
@@ -113,7 +108,6 @@ class ProfileViewController: UIViewController, UIGestureRecognizerDelegate {
     if (!isMoreDataLoading) {
       let scrollViewContentHeight = tableView.contentSize.height
       let scrollOffsetThreshold = scrollViewContentHeight - tableView.bounds.size.height
-      
       if(scrollView.contentOffset.y > scrollOffsetThreshold && tableView.isDragging) {
         isMoreDataLoading = true
         loadingMoreView.startAnimating()
@@ -129,7 +123,7 @@ class ProfileViewController: UIViewController, UIGestureRecognizerDelegate {
     return true
   }
   
-  func launchAccountsViewController(_ sth: AnyObject){
+  @objc private func launchAccountsViewController(_ sth: AnyObject){
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     let accountSwitchingViewController = storyboard.instantiateViewController(withIdentifier: "accountSwitchingViewController") as! AccountSwitchingViewController
@@ -210,18 +204,14 @@ extension ProfileViewController {
     let inputImage = CIImage(image: image)
     let originalOrientation = image.imageOrientation
     let originalScale = image.scale
-    
     let filter = CIFilter(name: "CIGaussianBlur")
     filter?.setValue(inputImage, forKey: kCIInputImageKey)
     filter?.setValue(10.0, forKey: kCIInputRadiusKey)
     let outputImage = filter?.outputImage
-    
     var cgImage:CGImage?
-    
     if let asd = outputImage {
       cgImage = context.createCGImage(asd, from: (inputImage?.extent)!)
     }
-    
     if let cgImageA = cgImage {
       return UIImage(cgImage: cgImageA, scale: originalScale, orientation: originalOrientation)
     }
@@ -231,11 +221,6 @@ extension ProfileViewController {
   
   public func imageFromURL(urlString: String, completion: @escaping (UIImage)->()) {
     URLSession.shared.dataTask(with: NSURL(string: urlString)! as URL, completionHandler: { (data, response, error) -> Void in
-      
-      if error != nil {
-        print(error)
-        return
-      }
       DispatchQueue.main.async(execute: { () -> Void in
         if let image = UIImage(data: data!) {
           completion(image)

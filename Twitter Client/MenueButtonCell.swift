@@ -11,10 +11,4 @@ import UIKit
 class MenueButtonCell: UITableViewCell {
 
   @IBOutlet weak var menuTabLabel: UILabel!
-  
-  override func awakeFromNib() {
-        super.awakeFromNib()
-        // Initialization code
-    }
-
 }

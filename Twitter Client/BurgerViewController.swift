@@ -10,12 +10,12 @@ import UIKit
 
 class BurgerViewController: UIViewController, UIGestureRecognizerDelegate {
   
-  @IBOutlet weak var leftMarginConstraint: NSLayoutConstraint!
-  @IBOutlet weak var menuView: UIView!
-  @IBOutlet weak var contentView: UIView!
+  @IBOutlet weak private var leftMarginConstraint: NSLayoutConstraint!
+  @IBOutlet weak private var menuView: UIView!
+  @IBOutlet weak private var contentView: UIView!
   
-  fileprivate var originalLeftMargin: CGFloat!
-  fileprivate var isHorizentalPan: Bool!
+  private var originalLeftMargin: CGFloat!
+  private var isHorizentalPan: Bool!
   
   var menuViewController: UIViewController! {
     didSet {
@@ -26,7 +26,7 @@ class BurgerViewController: UIViewController, UIGestureRecognizerDelegate {
   var contentViewController: UIViewController! {
     didSet (oldContentViewController) {
       view.layoutIfNeeded()
-
+      
       if oldContentViewController != nil {
         oldContentViewController.willMove(toParentViewController: nil)
         oldContentViewController.removeFromParentViewController()
@@ -37,19 +37,14 @@ class BurgerViewController: UIViewController, UIGestureRecognizerDelegate {
       contentView.addSubview(contentViewController.view)
       contentViewController.didMove(toParentViewController: self)
       
-      UIView.animate(withDuration: 0.3) { 
+      UIView.animate(withDuration: 0.3) {
         self.leftMarginConstraint.constant = 0
         self.view.layoutIfNeeded()
       }
     }
   }
   
-  override func viewDidLoad() {
-    super.viewDidLoad()
-    
-  }
-  
-  @IBAction func onPanGesture(_ sender: UIPanGestureRecognizer) {
+  @IBAction private func onPanGesture(_ sender: UIPanGestureRecognizer) {
     let translation = sender.translation(in: view).x
     let velocity = sender.velocity(in: view).x
     

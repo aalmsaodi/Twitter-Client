@@ -12,7 +12,7 @@ import BDBOAuth1Manager
 
 class LoginViewController: UIViewController {
   
-  @IBOutlet weak var loginBtn: UIButton!
+  @IBOutlet weak private var loginBtn: UIButton!
   
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -20,7 +20,7 @@ class LoginViewController: UIViewController {
     loginBtn.layer.masksToBounds = true
   }
   
-  @IBAction func loginTapped(_ sender: Any) {
+  @IBAction private func loginTapped(_ sender: Any) {
     TwitterClient.shared?.login()
   }
 }

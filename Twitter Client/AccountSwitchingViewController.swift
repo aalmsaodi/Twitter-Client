@@ -14,19 +14,19 @@ class AccountSwitchingViewController: UIViewController, UITableViewDelegate, UIT
   private var isHorizentalPan: Bool!
   private var indexPath: IndexPath!
   
-  var storybrd: UIStoryboard!
-  let appDelegate = UIApplication.shared.delegate as! AppDelegate
-  
   override func viewDidLoad() {
     super.viewDidLoad()
     tableView.delegate = self
     tableView.dataSource = self
     tableView.rowHeight = UITableViewAutomaticDimension
     tableView.estimatedRowHeight = 100
-    
-    storybrd = UIStoryboard(name: "Main", bundle: nil)
   }
   
+  @objc private func addNewAccount() {
+    TwitterClient.shared?.login()
+  }
+  
+  // MARK: - tableView delegates
   func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
     let addBtnView = UIButton(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 100))
     let addImageView = UIImageView(frame: CGRect(x: (tableView.frame.width/2 - 35), y: (addBtnView.frame.height/2 - 35), width: 70, height: 70))
@@ -36,10 +36,6 @@ class AccountSwitchingViewController: UIViewController, UITableViewDelegate, UIT
     addBtnView.addSubview(addImageView)
     addBtnView.addTarget(self, action: #selector(addNewAccount), for: .touchUpInside)
     return addBtnView
-  }
-  
-  func addNewAccount() {
-    TwitterClient.shared?.login()
   }
   
   func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
@@ -55,11 +51,13 @@ class AccountSwitchingViewController: UIViewController, UITableViewDelegate, UIT
     TwitterClient.shared?.requestSerializer.removeAccessToken()
     TwitterClient.shared?.requestSerializer.saveAccessToken(selectedAcount.accessToken)
     TwitterClient.currentAccount = selectedAcount
+
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    let storyboard = UIStoryboard(name: "Main", bundle: nil)
     
-    let burgerViewController = storybrd.instantiateViewController(withIdentifier: "burgerViewController") as! BurgerViewController
+    let burgerViewController = storyboard.instantiateViewController(withIdentifier: "burgerViewController") as! BurgerViewController
     appDelegate.window?.rootViewController = burgerViewController
-    
-    let menuViewController = storybrd.instantiateViewController(withIdentifier: "menuViewController") as! MenuViewController
+    let menuViewController = storyboard.instantiateViewController(withIdentifier: "menuViewController") as! MenuViewController
     
     menuViewController.burgerViewController = burgerViewController
     burgerViewController.menuViewController = menuViewController
@@ -74,7 +72,8 @@ class AccountSwitchingViewController: UIViewController, UITableViewDelegate, UIT
     return cell
   }
   
-  func onCellPanGesture(_ sender: UIPanGestureRecognizer) {
+  // MARK: - gesture delegates
+  @objc private func onCellPanGesture(_ sender: UIPanGestureRecognizer) {
     if isHorizentalPan {
       let cell = sender.view as! AccountCell
       cell.animateAccountView(sender, removeCell: {

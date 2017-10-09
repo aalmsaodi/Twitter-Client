@@ -24,17 +24,17 @@ class TakingNewPhotoViewController: UIViewController, UINavigationControllerDele
     }
   }
   
-  @IBAction func onLibraryBtn(_ sender: Any) {
+  @IBAction private func onLibraryBtn(_ sender: Any) {
     imagePicker.sourceType = .photoLibrary
     self.present(self.imagePicker, animated: true, completion: nil)
   }
   
-  @IBAction func onPhotoBtn(_ sender: Any) {
+  @IBAction private func onPhotoBtn(_ sender: Any) {
     imagePicker.sourceType = .camera
     self.present(self.imagePicker, animated: true, completion: nil)
   }
   
-  @IBAction func onCancelBtn(_ sender: Any) {
+  @IBAction private func onCancelBtn(_ sender: Any) {
     self.dismiss(animated: true, completion: nil)
   }
   

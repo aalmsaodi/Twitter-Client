@@ -48,12 +48,12 @@ class PostTweetViewController: UIViewController, UITextViewDelegate {
     navigationController?.navigationBar.tintColor = UIColor.gray
   }
   
-  @IBAction func onCancelBtn(_ sender: Any) {
+  @IBAction private func onCancelBtn(_ sender: Any) {
     counterLabel.text = ""
     navigationController?.popViewController(animated: true)
   }
   
-  @IBAction func onTweetBtn(_ sender: Any) {
+  @IBAction private func onTweetBtn(_ sender: Any) {
     guard  let tweet = tweetTextField.text else {return}
     self.tweetTextField.resignFirstResponder()
     let tap = UITapGestureRecognizer(target: self, action: #selector(dismissCheckView))
@@ -63,7 +63,7 @@ class PostTweetViewController: UIViewController, UITextViewDelegate {
       TwitterClient.shared?.postTweet(tweet: tweet, replyToTweetID: tweetReplyingTo?.id, ownerOfTweet: "@\(tweetReplyingTo!.user.screenName)") { [unowned self] (error, newTweetID) in
         if error == nil {
           MRProgressOverlayView.showOverlayAdded(to: self.view, title: "Reply Sent", mode: .checkmark, animated: true)
-          self.createTempTweetToShowOnTimeLineWithoutFetching(itIsNewTweet: false, newTweetID: newTweetID!)
+          self.createTempTweetWithoutFetching(itIsNewTweet: false, newTweetID: newTweetID!)
         } else {
           MRProgressOverlayView.showOverlayAdded(to: self.view, title: "Replying Faild", mode: .cross, animated: true)
           print(error ?? "tweet didn't get through")
@@ -75,7 +75,7 @@ class PostTweetViewController: UIViewController, UITextViewDelegate {
       TwitterClient.shared?.postTweet(tweet: tweet, replyToTweetID: nil, ownerOfTweet: nil) { [unowned self] (error, newTweetID) in
         if error == nil {
           MRProgressOverlayView.showOverlayAdded(to: self.view, title: "Tweet Sent", mode: .checkmark, animated: true)
-          self.createTempTweetToShowOnTimeLineWithoutFetching(itIsNewTweet: true, newTweetID: newTweetID!)
+          self.createTempTweetWithoutFetching(itIsNewTweet: true, newTweetID: newTweetID!)
         } else {
           MRProgressOverlayView.showOverlayAdded(to: self.view, title: "Tweeting Faild", mode: .cross, animated: true)
           print(error ?? "tweet didn't get through")
@@ -85,13 +85,13 @@ class PostTweetViewController: UIViewController, UITextViewDelegate {
     }
   }
   
-  func dismissCheckView() {
+  @objc private func dismissCheckView() {
     MRProgressOverlayView.dismissOverlay(for: self.view, animated: true)
     counterLabel.text = ""
     navigationController?.popViewController(animated: true)
   }
   
-  func createTempTweetToShowOnTimeLineWithoutFetching(itIsNewTweet:Bool, newTweetID:String){
+  private func createTempTweetWithoutFetching(itIsNewTweet:Bool, newTweetID:String){
     var tweetText:String!
     var retweetedBy:String?
     if itIsNewTweet {

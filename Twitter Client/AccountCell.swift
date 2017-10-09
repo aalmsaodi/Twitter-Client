@@ -10,10 +10,10 @@ import UIKit
 
 class AccountCell: UITableViewCell {
   
-  @IBOutlet weak var accountView: UIView!
-  @IBOutlet weak var userNameLabel: UILabel!
-  @IBOutlet weak var screenNameLabel: UILabel!
-  @IBOutlet weak var avatarImage: UIImageView!
+  @IBOutlet weak private var accountView: UIView!
+  @IBOutlet weak private var userNameLabel: UILabel!
+  @IBOutlet weak private var screenNameLabel: UILabel!
+  @IBOutlet weak private var avatarImage: UIImageView!
   
   private var originalAlpha: CGFloat!
   private var originalScale: CGFloat!
@@ -36,10 +36,6 @@ class AccountCell: UITableViewCell {
     }
   }
   
-  override func awakeFromNib() {
-    super.awakeFromNib()
-  }
-  
   func animateAccountView(_ sender: UIPanGestureRecognizer, removeCell: @escaping ()->() ) {
     let translation = sender.translation(in: contentView).x
     let velocity = sender.velocity(in: contentView).x
@@ -58,7 +54,7 @@ class AccountCell: UITableViewCell {
     } else if sender.state == .ended {
       UIView.animate(withDuration: 0.5, animations: {
         if abs(self.accountView.frame.origin.x - self.originalPositionX) > 70 {
-          if velocity > 0 { //finish Auto-removing accoutn
+          if velocity > 0 {   //finish Auto-removing accoutn
             self.accountView.frame.origin.x = self.accountView.frame.width
             self.accountView.transform = CGAffineTransform(scaleX: 2/5, y: 2/5)
             self.accountView.alpha = 0.7
@@ -68,7 +64,7 @@ class AccountCell: UITableViewCell {
             self.accountView.transform = CGAffineTransform(scaleX: 1, y: 1)
             self.accountView.alpha = 1
           }
-        } else { //failed removing account
+        } else {              //failed removing account
           self.accountView.frame.origin.x = 0
           self.accountView.transform = CGAffineTransform(scaleX: 1, y: 1)
           self.accountView.alpha = 1
@@ -76,5 +72,4 @@ class AccountCell: UITableViewCell {
       })
     }
   }
-  
 }

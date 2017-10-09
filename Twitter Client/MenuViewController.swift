@@ -16,15 +16,14 @@ enum IndexVC: Int {
 
 class MenuViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
   
-  @IBOutlet weak var tableView: UITableView!
+  @IBOutlet weak private var tableView: UITableView!
   
   private var profileNavigationController: UIViewController!
   private var homeNavigationController: UIViewController!
   private var mentionsNavigationController: UIViewController!
   private var accountSwitchingViewController: UIViewController!
-  
-  var viewControllers: [UIViewController] = []
-  let menuTitles = ["Profile", "Home Timeline", "Mentions Timeline", "Accounts"]
+  private var viewControllers: [UIViewController] = []
+  private let menuTitles = ["Profile", "Home Timeline", "Mentions Timeline", "Accounts"]
 
   var burgerViewController: BurgerViewController!
   
@@ -88,7 +87,6 @@ class MenuViewController: UIViewController, UITableViewDelegate, UITableViewData
   }
   
   func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    // #warning Incomplete implementation, return the number of rows
     return menuTitles.count
   }
 }

@@ -42,30 +42,26 @@ class ProfileInfoCell: UITableViewCell {
   
   var changingAvatarImageSizeBy: CGFloat? {
     didSet {
-      avatarImageBtn.frame.size.height += changingAvatarImageSizeBy!
-      avatarImageBtn.frame.size.width += changingAvatarImageSizeBy!
+      if case 90..<121 = Int(changingAvatarImageSizeBy!) {
+        avatarImageBtn.transform = CGAffineTransform(scaleX: (changingAvatarImageSizeBy!-40)/80, y: (changingAvatarImageSizeBy!-40)/80)
+        avatarImageBtn.frame.origin.x = 20 - (120 - changingAvatarImageSizeBy!)/4
+      }
     }
   }
   
-  override func awakeFromNib() {
-    super.awakeFromNib()
-
-  }
-  
-  @IBAction func onProfilePageControl(_ sender: UIPageControl) {
+  @IBAction private func onProfilePageControl(_ sender: UIPageControl) {
     if sender.currentPage == 0 { //states page
       descriptionPage.isHidden = true
       statesPage.isHidden = false
       isDescriptionCurrentPage?(false)
-    } else { //description page
+    } else {                    //description page
       descriptionPage.isHidden = false
       statesPage.isHidden = true
       isDescriptionCurrentPage?(true)
     }
   }
   
-  @IBAction func onAvatarImageBtn(_ sender: Any) {
+  @IBAction private func onAvatarImageBtn(_ sender: Any) {
     takePicForProfileAvatar?()
   }
-  
 }

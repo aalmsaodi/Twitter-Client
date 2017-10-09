@@ -21,16 +21,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       print("welecome \(TwitterClient.currentAccount.user.name)")
 
       let storyboard = UIStoryboard(name: "Main", bundle: nil)
-      
       let burgerViewController = storyboard.instantiateViewController(withIdentifier: "burgerViewController") as! BurgerViewController
       window?.rootViewController = burgerViewController
-      
       let menuViewController = storyboard.instantiateViewController(withIdentifier: "menuViewController") as! MenuViewController
       
       menuViewController.burgerViewController = burgerViewController
       burgerViewController.menuViewController = menuViewController
     }
-    
     return true
   }
   
