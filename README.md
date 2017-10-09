@@ -26,6 +26,6 @@ Completed features:
 
 
 Walkthrough of Twitter Client:
-![Video Walkthrough](https://media.giphy.com/media/xT9IguEQ9I4u6yoi6A/giphy.gif)
+![Video Walkthrough](https://media.giphy.com/media/l378i4s34toLghbMs/giphy.gif)
 
 GIF created with [LiceCap](http://www.cockos.com/licecap/).
